@@ -100,11 +100,14 @@ __friend_binary_cmp_op_decl_(>)
 __friend_binary_cmp_op_decl_(<=)
 __friend_binary_cmp_op_decl_(>=)
 __friend_binary_cmp_op_decl_(==)
+__friend_binary_cmp_op_decl_(!=)
 
 __friend_unary_op_decl_(-)
 
 __trans_math_decl_(fabs)
 __trans_math_decl_(abs)
+__trans_math_decl_(min)
+__trans_math_decl_(max)
 // cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
 __trans_math_decl_(exp)
 __trans_math_decl_(exp2)
@@ -217,11 +220,14 @@ public:
   __friend_binary_cmp_op_(<=)
   __friend_binary_cmp_op_(>=)
   __friend_binary_cmp_op_(==)
+  __friend_binary_cmp_op_(!=)
 
   __friend_unary_op_(-)
 
   __trans_math_(fabs)
   __trans_math_(abs)
+  __trans_math_(min)
+  __trans_math_(max)
   // cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
   __trans_math_(exp)
   __trans_math_(exp2)
