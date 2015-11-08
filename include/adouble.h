@@ -6,6 +6,22 @@
 
 using namespace std;
 
+#define __friend_binary_template_decl_(ret_type, op, keyword) \
+  ret_type keyword op (const adouble& a, const adouble& b); \
+  ret_type keyword op (const double& a, const adouble& b); \
+  ret_type keyword op (const adouble& a, const double& b);
+
+#define __friend_binary_template_op_(ret_type, op, keyword) \
+  friend ret_type keyword op (const adouble& a, const adouble& b) { \
+    return ret_type ( a.a op b.a ); \
+  } \
+  friend ret_type keyword op (const double& a, const adouble& b) { \
+    return ret_type ( a op b.a ); \
+  } \
+  friend ret_type keyword op (const adouble& a, const double& b) { \
+    return ret_type ( a.a op b ); \
+  }
+
 #define __friend_unary_op_decl_(op) \
   adouble operator op (const adouble& a);
 
@@ -15,36 +31,16 @@ using namespace std;
   }
 
 #define __friend_binary_op_decl_(op) \
-  adouble operator op (const adouble& a, const adouble& b); \
-  adouble operator op (const double& a, const adouble& b); \
-  adouble operator op (const adouble& a, const double& b);
+  __friend_binary_template_decl_(adouble, op, operator)
 
 #define __friend_binary_op_(op) \
-  friend adouble operator op (const adouble& a, const adouble& b) { \
-    return adouble(a.a op b.a); \
-  } \
-  friend adouble operator op (const double& a, const adouble& b) { \
-    return adouble(a op b.a); \
-  } \
-  friend adouble operator op (const adouble& a, const double& b) { \
-    return adouble(a.a op b); \
-  }
+  __friend_binary_template_op_(adouble, op, operator)
 
 #define __friend_binary_cmp_op_decl_(op) \
-  bool operator op (const adouble& a, const adouble& b); \
-  bool operator op (const double& a, const adouble& b); \
-  bool operator op (const adouble& a, const double& b);
+  __friend_binary_template_decl_(bool, op, operator)
 
 #define __friend_binary_cmp_op_(op) \
-  friend bool operator op (const adouble& a, const adouble& b) { \
-    return a.a op b.a; \
-  } \
-  friend bool operator op (const double& a, const adouble& b) { \
-    return a op b.a; \
-  } \
-  friend bool operator op (const adouble& a, const double& b) { \
-    return a.a op b; \
-  }
+  __friend_binary_template_op_(bool, op, operator)
 
 #define __self_binary_op_(op) \
   inline void operator op (const double& other) { \
@@ -72,9 +68,7 @@ using namespace std;
   }
 
 #define __trans_math_decl_2_(f) \
-  adouble f (const adouble& a, const adouble& b); \
-  adouble f (const double& a, const adouble& b); \
-  adouble f (const adouble& a, const double& b);
+  __friend_binary_template_decl_(adouble, f, )
 
 #define __trans_math_2_(f) \
   friend adouble f (const adouble& a, const adouble& b) { \
