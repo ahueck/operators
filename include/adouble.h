@@ -30,6 +30,22 @@ using namespace std;
     return adouble(a.a op b); \
   }
 
+#define __friend_binary_cmp_op_decl_(op) \
+  bool operator op (const adouble& a, const adouble& b); \
+  bool operator op (const double& a, const adouble& b); \
+  bool operator op (const adouble& a, const double& b);
+
+#define __friend_binary_cmp_op_(op) \
+  friend bool operator op (const adouble& a, const adouble& b) { \
+    return a.a op b.a; \
+  } \
+  friend bool operator op (const double& a, const adouble& b) { \
+    return a op b.a; \
+  } \
+  friend bool operator op (const adouble& a, const double& b) { \
+    return a.a op b; \
+  }
+
 #define __self_binary_op_(op) \
   inline void operator op (const double& other) { \
     a op other; \
@@ -71,17 +87,25 @@ using namespace std;
     return adouble( f (a.a, b) ); \
   }
 
+#define __trans_math_2_special_decl_(f) \
+  adouble f (const int a, const adouble& b);
+
+#define __trans_math_2_special_(f) \
+  friend adouble f (const int a, const adouble& b) { \
+    return adouble( f (a, b.a) ); \
+  }
+
 class adouble;
 
 __friend_binary_op_decl_(+)
 __friend_binary_op_decl_(-)
 __friend_binary_op_decl_(*)
 __friend_binary_op_decl_(/)
-__friend_binary_op_decl_(<)
-__friend_binary_op_decl_(>)
-__friend_binary_op_decl_(<=)
-__friend_binary_op_decl_(>=)
-__friend_binary_op_decl_(==)
+__friend_binary_cmp_op_decl_(<)
+__friend_binary_cmp_op_decl_(>)
+__friend_binary_cmp_op_decl_(<=)
+__friend_binary_cmp_op_decl_(>=)
+__friend_binary_cmp_op_decl_(==)
 
 __friend_unary_op_decl_(-)
 
@@ -123,10 +147,11 @@ __trans_math_decl_(lgamma)
 __trans_math_decl_(gamma)
 __trans_math_decl_(j0)
 __trans_math_decl_(j1)
-__trans_math_decl_(jn)
 __trans_math_decl_(y0)
 __trans_math_decl_(y1)
-__trans_math_decl_(yn)
+__trans_math_2_special_decl_(yn)
+__trans_math_2_special_decl_(jn)
+
 
 __trans_math_decl_2_(pow)
 __trans_math_decl_2_(hypot)
@@ -142,9 +167,6 @@ class adouble {
 private:
   double a;
 public:
-  static const adouble zero;
-  static const adouble one;
-
   adouble() : a(0.0) {
 
   }
@@ -196,11 +218,11 @@ public:
   __friend_binary_op_(-)
   __friend_binary_op_(*)
   __friend_binary_op_(/)
-  __friend_binary_op_(<)
-  __friend_binary_op_(>)
-  __friend_binary_op_(<=)
-  __friend_binary_op_(>=)
-  __friend_binary_op_(==)
+  __friend_binary_cmp_op_(<)
+  __friend_binary_cmp_op_(>)
+  __friend_binary_cmp_op_(<=)
+  __friend_binary_cmp_op_(>=)
+  __friend_binary_cmp_op_(==)
 
   __friend_unary_op_(-)
 
@@ -242,10 +264,10 @@ public:
   __trans_math_(gamma)
   __trans_math_(j0)
   __trans_math_(j1)
-  __trans_math_(jn)
   __trans_math_(y0)
   __trans_math_(y1)
-  __trans_math_(yn)
+  __trans_math_2_special_(yn)
+  __trans_math_2_special_(jn)
 
   __trans_math_2_(pow)
   __trans_math_2_(hypot)
@@ -255,14 +277,13 @@ public:
 
   friend istream& operator>> (istream& is, adouble& a) {
     is >> a.a;
+    return is;
   }
 
   friend ostream& operator<< (ostream& os, const adouble& a) {
     os << a.a;
+    return os;
   }
 };
-
-const adouble adouble::zero = adouble(0.0);
-const adouble adouble::one = adouble(1.0);
 
 #endif // __adouble_H__
