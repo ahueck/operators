@@ -6,6 +6,8 @@
 
 using namespace std;
 
+#define NOOP
+
 #define __friend_binary_template_decl_(ret_type, op, keyword) \
   ret_type keyword op (const adouble& a, const adouble& b); \
   ret_type keyword op (const double& a, const adouble& b); \
@@ -68,7 +70,7 @@ using namespace std;
   }
 
 #define __trans_math_decl_2_(f) \
-  __friend_binary_template_decl_(adouble, f, )
+  __friend_binary_template_decl_(adouble, f, NOOP)
 
 #define __trans_math_2_(f) \
   friend adouble f (const adouble& a, const adouble& b) { \
@@ -104,6 +106,7 @@ __friend_binary_cmp_op_decl_(!=)
 
 __friend_unary_op_decl_(-)
 
+__trans_math_decl_(round)
 __trans_math_decl_(fabs)
 __trans_math_decl_(abs)
 __trans_math_decl_(min)
@@ -228,6 +231,7 @@ public:
   __trans_math_(abs)
   __trans_math_(min)
   __trans_math_(max)
+  __trans_math_(round)
   // cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
   __trans_math_(exp)
   __trans_math_(exp2)
