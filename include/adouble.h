@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#define NOOP
+#define __NOOP_ 
 
 #define __friend_binary_template_decl_(ret_type, op, keyword) \
   ret_type keyword op (const adouble& a, const adouble& b); \
@@ -70,7 +70,7 @@ using namespace std;
   }
 
 #define __trans_math_decl_2_(f) \
-  __friend_binary_template_decl_(adouble, f, NOOP)
+  __friend_binary_template_decl_(adouble, f, __NOOP_)
 
 #define __trans_math_2_(f) \
   friend adouble f (const adouble& a, const adouble& b) { \

@@ -1,6 +1,7 @@
 #include "adouble.h"
 
 int main() {
+  const adouble pi = 3.14;
   using namespace std;
   adouble a = 10.0;
   adouble b(10.0);
@@ -15,7 +16,8 @@ int main() {
   cout << max(a, 2.0) << " - 10" << endl;
   cout << min(a, 2.0) << " - 2" << endl;
   cout << (a*b*c) << " - 1000" << endl;
-  cout << gamma(a*b*c) << " - 1000" << endl;
+  cout << sin(a*9*pi / 180.0) << " - 1" << endl;
+  cout << round(cos(a*9*pi / 180.0)) << " - 0" << endl;
 
   return 0;
 }
