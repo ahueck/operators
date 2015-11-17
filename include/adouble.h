@@ -4,17 +4,6 @@
 #ifndef __adouble_H__
 #define __adouble_H__
 
-/*
-inline double max(double a, double b) {
-  if(a > b) { return a; }
-  return b;
-}
-
-inline double min(double a, double b) {
-  if(a < b) { return a; }
-  return b;
-}
-*/
 #define __NOOP_ 
 
 #define __friend_binary_template_decl_(ret_type, op, keyword) \
@@ -133,7 +122,10 @@ __friend_binary_cmp_op_decl_(!=)
 __friend_unary_op_decl_(-)
 
 __trans_math_decl_(round)
+__trans_math_decl_(ceil)
+__trans_math_decl_(floor)
 __trans_math_decl_(fabs)
+// for compatibility:
 __trans_math_decl_(abs)
 // cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
 __trans_math_decl_(exp)
@@ -254,6 +246,8 @@ public:
   __trans_math_(fabs)
   __trans_math_std_(abs)
   __trans_math_(round)
+  __trans_math_(ceil)
+  __trans_math_(floor)
   // cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
   __trans_math_(exp)
   __trans_math_(exp2)
@@ -313,3 +307,4 @@ public:
 };
 
 #endif // __adouble_H__
+
