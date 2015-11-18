@@ -1,0 +1,25 @@
+language: C++
+
+compiler:
+  - gcc
+
+before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -qq
+
+install:
+  - sudo apt-get install gcc-4.8 g++-4.8
+
+before_script:
+  - mkdir build
+  - cd build
+
+script: 
+  - cmake -DCMAKE_CXX_COMPILER=g++-4.8 ..
+  - make
+  - cd .. && chmod +x unit_tests.sh
+  - ./unit_tests.sh
+
+branches:
+  only:
+    - master
