@@ -9,19 +9,24 @@
 #define TESTUTIL_H_
 
 #include <type_traits>
+#include <iostream>
 
 #define T_STRINGIFY_(A) # A
 #define T_STRINGIFY__(A) T_STRINGIFY_(A)
 #define T_STRINGIFY(A) T_STRINGIFY__(A)
 
 namespace {
-template<typename U>
-inline auto val(U&& val) -> decltype(val.value()) {
-  return val.value();
+template <typename T>
+auto v_impl(T t, std::false_type) -> decltype(t) {
+  return t;
 }
-
-inline bool val(bool val) {
-  return val;
+template <typename T>
+auto v_impl(T t, std::true_type) -> decltype(t.value()) {
+  return t.value();
+}
+template <typename T>
+auto val(T t) -> decltype(v_impl(t, std::is_class<T>())) {
+  return v_impl(t, std::is_class<T>());
 }
 }
 
