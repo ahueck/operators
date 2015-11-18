@@ -193,7 +193,7 @@ public:
 
   }
 
-  inline const double& value() const {
+  inline double value() const {
     return a;
   }
 
@@ -201,7 +201,7 @@ public:
     return a;
   }
 
-  inline const double& getValue() const {
+  inline double getValue() const {
     return a;
   }
 

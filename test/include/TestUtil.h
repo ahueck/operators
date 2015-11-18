@@ -17,23 +17,24 @@
 
 namespace {
 template <typename T>
-auto v_impl(T t, std::false_type) -> decltype(t) {
+auto v_impl(const T t, std::false_type) -> decltype(t) {
   return t;
 }
 template <typename T>
-auto v_impl(T t, std::true_type) -> decltype(t.value()) {
-  return t.value();
+auto v_impl(const T t, std::true_type) -> decltype(t.value()) {
+  auto val = t.value();
+  return val;
 }
 template <typename T>
-auto val(T t) -> decltype(v_impl(t, std::is_class<T>())) {
+auto val(const T t) -> decltype(v_impl(t, std::is_class<T>())) {
   return v_impl(t, std::is_class<T>());
 }
 }
 
 #define _test_2_t(OP, EXPECTED) \
 WHEN("a" T_STRINGIFY(OP) "b") { \
-  const auto ad = a.value(); \
-  const auto bd = b.value(); \
+  const auto ad = val(a); \
+  const auto bd = val(b); \
   auto c = a OP b; \
   THEN("a new value is created") { \
     auto cr = val(c); \
@@ -42,20 +43,21 @@ WHEN("a" T_STRINGIFY(OP) "b") { \
     else \
 	REQUIRE(EXPECTED == Approx(cr)); \
     AND_THEN("The old values are unchanged") { \
-	REQUIRE(a.value() == ad); \
-	REQUIRE(b.value() == bd); \
+	REQUIRE(val(a) == ad); \
+	REQUIRE(val(b) == bd); \
     } \
   } \
 }
 
 #define _test_1_t(OP, EXPECTED) \
 WHEN("a" T_STRINGIFY(OP) "=b") { \
-  const auto bd = b.value(); \
+  const auto bd = val(b); \
   a OP##= b; \
   THEN("a is changed") { \
-    REQUIRE(a.value() == Approx(EXPECTED)); \
+    auto ad = val(a); \
+    REQUIRE(ad == Approx(EXPECTED)); \
     AND_THEN("b is unchanged") { \
-	REQUIRE(b.value() == bd); \
+	REQUIRE(val(b) == bd); \
     } \
   } \
 }
