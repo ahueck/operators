@@ -17,17 +17,17 @@
 
 namespace {
 template <typename T>
-auto v_impl(const T t, std::false_type) -> decltype(t) {
+auto v_impl(T&& t, std::false_type) -> decltype(t) {
   return t;
 }
 template <typename T>
-auto v_impl(const T t, std::true_type) -> decltype(t.value()) {
+auto v_impl(T&& t, std::true_type) -> typename std::remove_reference<decltype(t.value())>::type {
   auto val = t.value();
   return val;
 }
 template <typename T>
-auto val(const T t) -> decltype(v_impl(t, std::is_class<T>())) {
-  return v_impl(t, std::is_class<T>());
+auto val(T&& t) -> decltype(v_impl(std::forward<T>(t), std::is_class<typename std::remove_reference<T>::type>())) {
+  return v_impl(std::forward<T>(t), std::is_class<typename std::remove_reference<T>::type>());
 }
 }
 
@@ -54,8 +54,7 @@ WHEN("a" T_STRINGIFY(OP) "=b") { \
   const auto bd = val(b); \
   a OP##= b; \
   THEN("a is changed") { \
-    auto ad = val(a); \
-    REQUIRE(ad == Approx(EXPECTED)); \
+    REQUIRE(val(a) == Approx(EXPECTED)); \
     AND_THEN("b is unchanged") { \
 	REQUIRE(val(b) == bd); \
     } \
