@@ -10,7 +10,8 @@ Goal
 ------------
 
 Multiple user-defined types with different techniques using operator overloading
-- Standard operator overloading
+- Standard operator overloading:
+  - [*adouble* header](include/adouble.h)
 - Expression templates
 - Maximal compatibility (drop-in replacement for a floating-point type)
 
@@ -30,7 +31,7 @@ For Ubuntu/Debian, refer to the [Travis CI file](.travis.yml) for guidance.
 
 ### Prerequisites
 
-1.  C++ Compiler with C++11 support (GCC version >= 4.8)
+1.  C++ Compiler with C++11 support for unit tests (GCC version >= 4.8)
 2.  cmake (version >= 2.8)
 
 ### Build the unit tests
