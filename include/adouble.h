@@ -4,107 +4,98 @@
 #ifndef __adouble_H__
 #define __adouble_H__
 
-#define __NOOP_ 
+#define __NOOP_
+#define __COMMA_ ,
 
-#define __friend_binary_template_decl_(ret_type, op, keyword) \
-  ret_type keyword op (const adouble& a, const adouble& b); \
-  ret_type keyword op (const double& a, const adouble& b); \
-  ret_type keyword op (const adouble& a, const double& b);
+#define __binary_template_decl_(ret_type, type, function) \
+  ret_type function (const a##type& a, const a##type& b); \
+  ret_type function (const type& a, const a##type& b); \
+  ret_type function (const a##type& a, const type& b);
 
-#define __friend_binary_template_op_(ret_type, op, keyword) \
-  friend ret_type keyword op (const adouble& a, const adouble& b) { \
-    return ret_type ( a.a op b.a ); \
+#define __friend_binary_template_def_(ret_type, type, function, inner, op) \
+  friend ret_type function (const a##type& a, const a##type& b) { \
+    return ret_type( inner(a.a op b.a) ); \
   } \
-  friend ret_type keyword op (const double& a, const adouble& b) { \
-    return ret_type ( a op b.a ); \
+  friend ret_type function (const type& a, const a##type& b) { \
+    return ret_type( inner(a op b.a) ); \
   } \
-  friend ret_type keyword op (const adouble& a, const double& b) { \
-    return ret_type ( a.a op b ); \
+  friend ret_type function (const a##type& a, const type& b) { \
+    return ret_type( inner(a.a op b) ); \
   }
 
-#define __friend_unary_op_decl_(op) \
-  adouble operator op (const adouble& a);
+#define __unary_template_decl_(type, function) \
+    a##type function (const a##type& a); \
 
-#define __friend_unary_op_(op) \
-  friend adouble operator op (const adouble& a) { \
-    return adouble( op a.a ); \
+#define __friend_unary_template_def_(type, function, inner) \
+  friend a##type function (const a##type& a) { \
+    return a##type( inner(a.a) ); \
   }
 
-#define __friend_binary_op_decl_(op) \
-  __friend_binary_template_decl_(adouble, op, operator)
-
-#define __friend_binary_op_(op) \
-  __friend_binary_template_op_(adouble, op, operator)
-
-#define __friend_binary_cmp_op_decl_(op) \
-  __friend_binary_template_decl_(bool, op, operator)
-
-#define __friend_binary_cmp_op_(op) \
-  __friend_binary_template_op_(bool, op, operator)
-
-#define __self_binary_op_(op) \
-  inline void operator op (const double& other) { \
-    a op other; \
+#define __self_binary_template_def(type, op) \
+  inline void operator op (const type& b) { \
+    a op b; \
   } \
-  inline void operator op (const adouble& other) { \
-    a op other.a; \
+  inline void operator op (const a##type& b) { \
+    a op b.a; \
   }
 
-#define __increment_op_(op) \
-  adouble& operator op () { \
-    a op ; \
+#define __increment_template_op_(type, op) \
+  a##type& operator op () { \
+    a op; \
     return *this; \
   } \
-  adouble operator op (int) { \
-    return adouble(op this->a); \
+  a##type operator op (int) { \
+    return a##type( op this->a ); \
   }
+
+#define __trans_math_2_template_special_decl_(type, f) \
+  a##type f (const int a, const a##type& b);
+
+#define __trans_math_2_template_special_(type, f) \
+  friend a##type f (const int a, const a##type& b) { \
+    return a##type( f(a, b.a) ); \
+  }
+
+// adouble specifics:
+#define __friend_binary_op_decl_(op) \
+  __binary_template_decl_(adouble, double, operator op)
+#define __friend_binary_op_(op) \
+  __friend_binary_template_def_(adouble, double, operator op, __NOOP_, op)
+
+#define __friend_binary_cmp_op_decl_(op) \
+  __binary_template_decl_(bool, double, operator op)
+#define __friend_binary_cmp_op_(op) \
+  __friend_binary_template_def_(bool, double, operator op, __NOOP_, op)
+
+#define __self_binary_op_(op) \
+  __self_binary_template_def(double, op)
+
+#define __increment_op_(op) \
+  __increment_template_op_(double, op)
+
+#define __friend_unary_op_decl_(op) \
+  __unary_template_decl_(double, operator op)
+#define __friend_unary_op_(op) \
+  __friend_unary_template_def_(double, operator op, op)
 
 #define __trans_math_decl_(f) \
-  adouble f (const adouble& a);
-
+  __unary_template_decl_(double, f)
 #define __trans_math_(f) \
-  friend adouble f (const adouble& a) { \
-    return adouble( f (a.a) ); \
-  }
-
+  __friend_unary_template_def_(double, f, f)
 #define __trans_math_std_(f) \
-  friend adouble f (const adouble& a) { \
-    return adouble( std:: f (a.a) ); \
-  }
-
+  __friend_unary_template_def_(double, f, std::f)
 
 #define __trans_math_decl_2_(f) \
-  __friend_binary_template_decl_(adouble, f, __NOOP_)
-
+  __binary_template_decl_(adouble, double, f)
 #define __trans_math_2_(f) \
-  friend adouble f (const adouble& a, const adouble& b) { \
-    return adouble( f (a.a, b.a) ); \
-  } \
-  friend adouble f (const double& a, const adouble& b) { \
-    return adouble( f (a, b.a) ); \
-  } \
-  friend adouble f (const adouble& a, const double& b) { \
-    return adouble( f (a.a, b) ); \
-  }
-
+  __friend_binary_template_def_(adouble, double, f, f, __COMMA_)
 #define __trans_math_2_std_(f) \
-  friend adouble f (const adouble& a, const adouble& b) { \
-    return adouble( std:: f (a.a, b.a) ); \
-  } \
-  friend adouble f (const double& a, const adouble& b) { \
-    return adouble( std:: f (a, b.a) ); \
-  } \
-  friend adouble f (const adouble& a, const double& b) { \
-    return adouble( std:: f (a.a, b) ); \
-  }
+  __friend_binary_template_def_(adouble, double, f, std::f, __COMMA_)
 
 #define __trans_math_2_special_decl_(f) \
-  adouble f (const int a, const adouble& b);
-
+  __trans_math_2_template_special_decl_(double, f)
 #define __trans_math_2_special_(f) \
-  friend adouble f (const int a, const adouble& b) { \
-    return adouble( f (a, b.a) ); \
-  }
+  __trans_math_2_template_special_(double, f)
 
 class adouble;
 
@@ -167,7 +158,6 @@ __trans_math_decl_(y0)
 __trans_math_decl_(y1)
 __trans_math_2_special_decl_(yn)
 __trans_math_2_special_decl_(jn)
-
 
 __trans_math_decl_2_(pow)
 __trans_math_decl_2_(hypot)
@@ -286,6 +276,7 @@ public:
   __trans_math_(j1)
   __trans_math_(y0)
   __trans_math_(y1)
+
   __trans_math_2_special_(yn)
   __trans_math_2_special_(jn)
 
@@ -307,4 +298,3 @@ public:
 };
 
 #endif // __adouble_H__
-
