@@ -12,8 +12,8 @@
 #include <type_traits>
 #include <cmath>
 
-#include "BinaryOp.hpp"
-#include "UnaryOp.hpp"
+#include "binary_op.hpp"
+#include "unary_op.hpp"
 
 namespace operators {
 namespace et {
