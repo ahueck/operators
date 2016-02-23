@@ -1,3 +1,5 @@
+// C++03 compatible operator overloading class *adouble*. Specifically making use of friend functionality.
+
 #include <iostream>
 #include <cmath>
 
