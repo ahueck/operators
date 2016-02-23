@@ -6,7 +6,7 @@
  */
 
 
-#include <adouble.h>
+#include <cpp03/adouble.h>
 
 #include <TestUtil.h>
 
