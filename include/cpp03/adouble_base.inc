@@ -1,86 +1,3 @@
-// C++03 compatible operator overloading class *adouble*. Specifically making use of friend functionality.
-
-#include <iostream>
-#include <cmath>
-
-#ifndef __adouble_fr_H__
-#define __adouble_fr_H__
-
-#include <util/macro_oo_friend.h>
-
-class adouble;
-
-__oo_binary_op_decl(+)
-__oo_binary_op_decl(-)
-__oo_binary_op_decl(*)
-__oo_binary_op_decl(/)
-
-__oo_binary_cmp_op_decl(<)
-__oo_binary_cmp_op_decl(>)
-__oo_binary_cmp_op_decl(<=)
-__oo_binary_cmp_op_decl(>=)
-__oo_binary_cmp_op_decl(==)
-__oo_binary_cmp_op_decl(!=)
-
-__oo_unary_op_decl(-)
-
-__oo_math_decl(round)
-__oo_math_decl(ceil)
-__oo_math_decl(floor)
-__oo_math_decl(fabs)
-// for compatibility:
-__oo_math_decl(abs)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
-__oo_math_decl(exp)
-__oo_math_decl(exp2)
-__oo_math_decl(exp10)
-__oo_math_decl(log)
-__oo_math_decl(log10)
-__oo_math_decl(log2)
-__oo_math_decl(logb)
-__oo_math_decl(sqrt)
-__oo_math_decl(cbrt)
-__oo_math_decl(expm1)
-__oo_math_decl(log1p)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Trig-Functions.html
-__oo_math_decl(sin)
-__oo_math_decl(cos)
-__oo_math_decl(tan)
-//__oo_math_decl(sincos)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Inverse-Trig-Functions.html
-__oo_math_decl(asin)
-__oo_math_decl(acos)
-__oo_math_decl(atan)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Hyperbolic-Functions.htm
-__oo_math_decl(sinh)
-__oo_math_decl(cosh)
-__oo_math_decl(tanh)
-__oo_math_decl(asinh)
-__oo_math_decl(acosh)
-__oo_math_decl(atanh)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Special-Functions.html
-__oo_math_decl(erf)
-__oo_math_decl(erfc)
-__oo_math_decl(lgamma)
-// Missing: "lgamma_r (double x, int *signp)"
-__oo_math_decl(gamma)
-__oo_math_decl(j0)
-__oo_math_decl(j1)
-__oo_math_decl(y0)
-__oo_math_decl(y1)
-__oo_math_2_special_decl(yn)
-__oo_math_2_special_decl(jn)
-
-__oo_math_decl_2(pow)
-__oo_math_decl_2(hypot)
-__oo_math_decl_2(atan2)
-__oo_math_decl_2(min)
-__oo_math_decl_2(max)
-
-std::istream& operator>> (std::istream& is, adouble& a);
-std::ostream& operator<< (std::ostream& os, const adouble& a);
-
-
 class adouble {
 private:
   double a;
@@ -131,6 +48,7 @@ public:
   __oo_unitstep_op(++)
   __oo_unitstep_op(--)
 
+#ifdef __oo_friends_activate
 // Friend operators
   __oo_binary_op(+)
   __oo_binary_op(-)
@@ -207,6 +125,89 @@ public:
     os << a.a;
     return os;
   }
+#endif
 };
 
-#endif // __oo_adouble_H__oo_
+__oo_binary_op_decl(+)
+__oo_binary_op_decl(-)
+__oo_binary_op_decl(*)
+__oo_binary_op_decl(/)
+
+__oo_binary_cmp_op_decl(<)
+__oo_binary_cmp_op_decl(>)
+__oo_binary_cmp_op_decl(<=)
+__oo_binary_cmp_op_decl(>=)
+__oo_binary_cmp_op_decl(==)
+__oo_binary_cmp_op_decl(!=)
+
+__oo_unary_op_decl(-)
+
+__oo_math_decl(round)
+__oo_math_decl(ceil)
+__oo_math_decl(floor)
+__oo_math_decl(fabs)
+// for compatibility:
+__oo_math_decl(abs)
+// cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
+__oo_math_decl(exp)
+__oo_math_decl(exp2)
+__oo_math_decl(exp10)
+__oo_math_decl(log)
+__oo_math_decl(log10)
+__oo_math_decl(log2)
+__oo_math_decl(logb)
+__oo_math_decl(sqrt)
+__oo_math_decl(cbrt)
+__oo_math_decl(expm1)
+__oo_math_decl(log1p)
+// cf. https://www.gnu.org/software/libc/manual/html_node/Trig-Functions.html
+__oo_math_decl(sin)
+__oo_math_decl(cos)
+__oo_math_decl(tan)
+//__oo_math_decl(sincos)
+// cf. https://www.gnu.org/software/libc/manual/html_node/Inverse-Trig-Functions.html
+__oo_math_decl(asin)
+__oo_math_decl(acos)
+__oo_math_decl(atan)
+// cf. https://www.gnu.org/software/libc/manual/html_node/Hyperbolic-Functions.htm
+__oo_math_decl(sinh)
+__oo_math_decl(cosh)
+__oo_math_decl(tanh)
+__oo_math_decl(asinh)
+__oo_math_decl(acosh)
+__oo_math_decl(atanh)
+// cf. https://www.gnu.org/software/libc/manual/html_node/Special-Functions.html
+__oo_math_decl(erf)
+__oo_math_decl(erfc)
+__oo_math_decl(lgamma)
+// Missing: "lgamma_r (double x, int *signp)"
+__oo_math_decl(gamma)
+__oo_math_decl(j0)
+__oo_math_decl(j1)
+__oo_math_decl(y0)
+__oo_math_decl(y1)
+__oo_math_2_special_decl(yn)
+__oo_math_2_special_decl(jn)
+
+__oo_math_decl_2(pow)
+__oo_math_decl_2(hypot)
+__oo_math_decl_2(atan2)
+__oo_math_decl_2(min)
+__oo_math_decl_2(max)
+
+#ifdef __oo_friends_activate
+std::istream& operator>> (std::istream& is, adouble& a);
+std::ostream& operator<< (std::ostream& os, const adouble& a);
+#else
+std::istream& operator>> (std::istream& is, adouble& a) {
+  double val;
+  is >> val;
+  a = val;
+  return is;
+}
+
+std::ostream& operator<< (std::ostream& os, const adouble& a) {
+  os << a.value();
+  return os;
+}
+#endif
