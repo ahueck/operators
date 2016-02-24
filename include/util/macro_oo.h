@@ -1,62 +1,48 @@
 /*
  * macro_oo.h
  *
- *  Created on: Feb 23, 2016
+ *  Created on: Feb 24, 2016
  *      Author: ahueck
  */
 
 #ifndef MACRO_OO_H_
 #define MACRO_OO_H_
 
-#define __NOOP_
-#define __COMMA_ ,
+#include "macro_oo_template.h"
 
-#define __binary_template_decl_(ret_type, type, function) \
-  ret_type function (const a##type& a, const a##type& b); \
-  ret_type function (const type& a, const a##type& b); \
-  ret_type function (const a##type& a, const type& b);
+#define __oo_binary_op(op) \
+  __binary_definition_template(adouble, double, operator op, __noop, op, __oo_value, inline, __noop)
 
-#define __friend_binary_template_def_(ret_type, type, function, inner, op) \
-  friend ret_type function (const a##type& a, const a##type& b) { \
-    return ret_type( inner(a.a op b.a) ); \
-  } \
-  friend ret_type function (const type& a, const a##type& b) { \
-    return ret_type( inner(a op b.a) ); \
-  } \
-  friend ret_type function (const a##type& a, const type& b) { \
-    return ret_type( inner(a.a op b) ); \
-  }
 
-#define __unary_template_decl_(type, function) \
-    a##type function (const a##type& a); \
+#define __oo_binary_cmp_op(op) \
+  __binary_definition_template(bool, double, operator op, __noop, op, __oo_value, inline, __noop)
 
-#define __friend_unary_template_def_(type, function, inner) \
-  friend a##type function (const a##type& a) { \
-    return a##type( inner(a.a) ); \
-  }
 
-#define __self_binary_template_def(type, op) \
-  inline void operator op (const type& b) { \
-    a op b; \
-  } \
-  inline void operator op (const a##type& b) { \
-    a op b.a; \
-  }
+#define __oo_unary_op(op) \
+  __unary_definition_template(double, operator op, op, __oo_value, inline, __noop)
 
-#define __increment_template_op_(type, op) \
-  a##type& operator op () { \
-    a op; \
-    return *this; \
-  } \
-  a##type operator op (int) { \
-    return a##type( op this->a ); \
-  }
 
-#define __trans_math_2_template_special_decl_(type, f) \
-  a##type f (const int a, const a##type& b);
+#define __oo_math(f) \
+  __unary_definition_template(double, f, f, __oo_value, inline, __noop)
+#define __oo_math_std(f) \
+  __unary_definition_template(double, f, std::f, __oo_value, inline, __noop)
 
-#define __trans_math_2_template_special_(type, f) \
-  friend a##type f (const int a, const a##type& b) { \
-    return a##type( f(a, b.a) ); \
-  }
+
+#define __oo_math_2(f) \
+  __binary_definition_template(adouble, double, f, f, __comma, __oo_value, inline, __noop)
+#define __oo_math_2_std(f) \
+  __binary_definition_template(adouble, double, f, std::f, __comma, __oo_value, inline, __noop)
+
+
+#define __oo_math_2_special(f) \
+  __math_2_special_definition_template(double, f, __oo_value, inline, __noop)
+
+
+#define __oo_self_binary_op(op) \
+  __binary_self_definition(double, op)
+
+
+#define __oo_unitstep_op(op) \
+  __unary_unitstep_definition(double, op)
+
 #endif /* MACRO_OO_H_ */
