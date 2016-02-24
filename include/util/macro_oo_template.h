@@ -48,11 +48,13 @@
 
 #define __unary_unitstep_definition(type, op) \
   a##type& operator op () { \
-    a op; \
+    op a; \
     return *this; \
   } \
   a##type operator op (int) { \
-    return a##type( op a ); \
+    a##type res(a); \
+    op a; \
+    return res; \
   }
 
 #define __math_2_special_declaration(type, f) \
