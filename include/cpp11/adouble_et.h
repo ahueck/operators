@@ -122,34 +122,81 @@ public:
   number(const number<Dtype>& a) : data(a.data) {
   }
 
-  auto value() const -> typename TypeTraits<Dtype>::type {
+  inline auto value() const -> typename TypeTraits<Dtype>::type {
     return data;
   }
 
-  auto operator=(typename TypeTraits<Dtype>::cref_type a) -> typename std::add_lvalue_reference<decltype(*this)>::type {
+  inline auto value() -> typename TypeTraits<Dtype>::ref_type {
+    return data;
+  }
+
+  inline void set_value(typename TypeTraits<Dtype>::cref_type a) {
+    data = a;
+  }
+
+  inline auto operator=(typename TypeTraits<Dtype>::cref_type a) -> number<Dtype>& {
     data = a;
     return *this;
   }
 
   template<typename T>
-  auto operator=(const Expression<Dtype, T>& a) -> typename std::add_lvalue_reference<decltype(*this)>::type {
+  inline auto operator=(const Expression<Dtype, T>& a) -> number<Dtype>& {
     if(this != &a) {
       data = a.value();
     }
     return *this;
   }
 
-  auto operator=(const number<Dtype>& a) -> typename std::add_lvalue_reference<decltype(*this)>::type {
+  inline auto operator=(const number<Dtype>& a) -> number<Dtype>& {
     if(this != &a) {
-      data = a.value;
+      data = a.data;
     }
     return *this;
   }
 
   template<class T>
-  auto operator+=(const Expression<Dtype, T>& a) -> typename std::add_lvalue_reference<decltype(*this)>::type {
-    return *this = (*this + a);
+  inline auto operator+=(const Expression<Dtype, T>& a) -> number<Dtype>& {
+    *this = (*this + a);
+    return *this;
   }
+
+  inline auto operator+=(typename TypeTraits<Dtype>::cref_type a) -> number<Dtype>& {
+    data += a;
+    return *this;
+  }
+
+  template<class T>
+  inline auto operator-=(const Expression<Dtype, T>& a) -> number<Dtype>& {
+    *this = (*this - a);
+    return *this;
+  }
+
+  inline auto operator-=(typename TypeTraits<Dtype>::cref_type a) -> number<Dtype>& {
+    data -= a;
+    return *this;
+  }
+
+  inline auto operator++() -> number<Dtype>& {
+     *this += Dtype(1.0);
+     return *this;
+   }
+
+  inline auto operator++(int) -> number<Dtype> {
+     number<Dtype> res(*this);
+     ++(*this);
+     return res;
+   }
+
+  inline auto operator--() -> number<Dtype>& {
+     *this -= Dtype(1.0);
+     return *this;
+   }
+
+  inline auto operator--(int) -> number<Dtype> {
+     number<Dtype> res(*this);
+     --(*this);
+     return res;
+   }
 
 private:
   Dtype data;
