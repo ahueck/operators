@@ -35,8 +35,8 @@ inline auto function(const Expression<Dtype, T>& a, const Expression<Dtype, U>& 
 
 
 #define BIN_OP_L(name, function, inner, op) \
-template<typename Dtype, typename T, typename U> \
-class name##LeftExpr: public Expression<Dtype, name##LeftExpr<Dtype, T, U>> { \
+template<typename Dtype, typename T> \
+class name##LeftExpr: public Expression<Dtype, name##LeftExpr<Dtype, T>> { \
 private: \
   const T& t; \
   const typename TypeTraits<Dtype>::type u; \
@@ -51,19 +51,19 @@ public: \
   } \
 }; \
   \
-template <typename Dtype, typename T, typename U> \
-inline auto function(const Expression<Dtype, T>& a, typename TypeTraits<Dtype>::cref_type b) -> decltype(name##LeftExpr<Dtype, T, U>(a.cast(), b)) { \
-  return name##LeftExpr<Dtype, T, U>(a.cast(), b); \
+template <typename Dtype, typename T> \
+inline auto function(const Expression<Dtype, T>& a, typename TypeTraits<Dtype>::cref_type b) -> decltype(name##LeftExpr<Dtype, T>(a.cast(), b)) { \
+  return name##LeftExpr<Dtype, T>(a.cast(), b); \
 }
 
 #define BIN_OP_R(name, function, inner, op) \
-template<typename Dtype, typename T, typename U> \
-class name##RightExpr: public Expression<Dtype, name##RightExpr<Dtype, T, U>> { \
+template<typename Dtype, typename U> \
+class name##RightExpr: public Expression<Dtype, name##RightExpr<Dtype, U>> { \
 private: \
   const typename TypeTraits<Dtype>::type t; \
   const U& u; \
 public: \
-  explicit name##RightExpr(typename TypeTraits<Dtype>::cref_type a, const Expression<Dtype, T>& b) \
+  explicit name##RightExpr(typename TypeTraits<Dtype>::cref_type a, const Expression<Dtype, U>& b) \
     : t(a) \
     , u(b.cast()) \
   { \
@@ -73,9 +73,9 @@ public: \
   } \
 }; \
   \
-template <typename Dtype, typename T, typename U> \
-inline auto function(const Expression<Dtype, T>& a, typename TypeTraits<Dtype>::cref_type b) -> decltype(name##LeftExpr<Dtype, T, U>(a, b.cast())) { \
-  return name##RightExpr<Dtype, T, U>(a, b.value()); \
+template <typename Dtype, typename U> \
+inline auto function(typename TypeTraits<Dtype>::cref_type a, const Expression<Dtype, U>& b) -> decltype(name##RightExpr<Dtype, U>(a, b.cast())) { \
+  return name##RightExpr<Dtype, U>(a, b.cast()); \
 }
 
 #define __binary_op_cmpl(op) \

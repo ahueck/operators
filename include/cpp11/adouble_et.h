@@ -166,4 +166,19 @@ typedef number<double> adouble;
 }
 }
 
+#undef BIN_OP
+#undef BIN_OP_L
+#undef BIN_OP_R
+#undef __noop
+#undef __comma
+#undef __binary_op_cmpl
+#undef __trans_math_2
+#undef __trans_math_2_std
+#undef __binary_op
+
+#undef UN_OP
+#undef __trans_math
+#undef __trans_math_std
+#undef __unary_op
+
 #endif /* __adouble_et_H__ */
