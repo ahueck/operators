@@ -100,9 +100,11 @@ public:
   adouble() : a(0.0) {
 
   }
+
   adouble(double other) : a(other) {
 
   }
+
   adouble(const adouble& other) : a(other.a) {
 
   }
