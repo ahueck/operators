@@ -8,8 +8,8 @@
 #ifndef BINARYOP_HPP_
 #define BINARYOP_HPP_
 
-#define __noop
-#define __comma ,
+#define et_noop__
+#define et_comma__ ,
 
 #define BIN_OP(name, function, inner, op) \
 template<typename Dtype, typename T, typename U> \
@@ -94,19 +94,19 @@ inline auto function(const Expression<Dtype, T>& a, typename TypeTraits<Dtype>::
 
 
 #define __trans_math_2(name, function) \
-    BIN_OP_L(name, function, function,  __comma) \
-    BIN_OP(name, function, function,  __comma) \
-    BIN_OP_R(name, function, function,  __comma)
+    BIN_OP_L(name, function, function,  et_comma__) \
+    BIN_OP(name, function, function,  et_comma__) \
+    BIN_OP_R(name, function, function,  et_comma__)
 
 #define __trans_math_2_std(name, function) \
-    BIN_OP_L(name, function, std::function,  __comma) \
-    BIN_OP(name, function, std::function,  __comma) \
-    BIN_OP_R(name, function, std::function,  __comma)
+    BIN_OP_L(name, function, std::function,  et_comma__) \
+    BIN_OP(name, function, std::function,  et_comma__) \
+    BIN_OP_R(name, function, std::function,  et_comma__)
 
 #define __binary_op(name, op) \
-    BIN_OP_L(name, operator op, __noop, op) \
-    BIN_OP(name, operator op, __noop, op) \
-    BIN_OP_R(name, operator op, __noop, op) \
+    BIN_OP_L(name, operator op, et_noop__, op) \
+    BIN_OP(name, operator op, et_noop__, op) \
+    BIN_OP_R(name, operator op, et_noop__, op) \
 
 
 #endif /* BINARYOP_HPP_ */

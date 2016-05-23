@@ -13,5 +13,5 @@
 #include <catch/catch.hpp>
 
 #define OO_TYPE adouble
-#define TEST_PREFIX "c03adouble"
+#define TEST_PREFIX "cpp03adouble_"
 #include "operator_test.hpp"

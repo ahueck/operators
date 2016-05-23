@@ -99,8 +99,11 @@ class adouble
     : tao::operators::ordered_field<adouble>
     , tao::operators::ordered_field<adouble, double>
     , tao::operators::unit_steppable<adouble> {
+
+private:
+  double a;
 public:
-  adouble() noexcept : a() {
+  adouble() noexcept : a(0.0) {
 
   }
 
@@ -259,9 +262,6 @@ public:
   __trans_math_2_(atan2)
   __trans_math_2_std_(min)
   __trans_math_2_std_(max)
-
-private:
-  double a;
 };
 
 #endif /* ADOUBLE_TAO_H_ */

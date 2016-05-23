@@ -34,7 +34,7 @@ auto function(const Expression<Dtype, T>& a) -> decltype(name##Expr<Dtype, T>(a.
 #define __trans_math_std(name, function) \
   UN_OP(name, function, std::function)
 
-#define __unary_op(name, op) \
+#define __unary_op_et(name, op) \
   UN_OP(name, operator op, op)
 
 
