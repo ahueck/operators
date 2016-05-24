@@ -6,4 +6,4 @@ file(GLOB test_src "src/*.cpp")
 
 message(STATUS "Unit test source files: " ${test_src})
 
-add_executable(test_runner${EXE_SUFFIX} src/main.cpp src/test_adouble_h.cpp)
+add_executable(test_runner${EXE_SUFFIX} ${test_src}) #src/main.cpp src/test_adouble_h.cpp)

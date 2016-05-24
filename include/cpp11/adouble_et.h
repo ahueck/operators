@@ -20,6 +20,12 @@
   OP_CMP(<) \
   OP_CMP(>)
 
+#define ADOUBLE_SELF_OPERATORS_LIST \
+  OP_SELF(+=, +) \
+  OP_SELF(-=, -) \
+  OP_SELF(*=, *) \
+  OP_SELF(/=, /)
+
 #define ADOUBLE_ARITHMETIC_OPERATORS_LIST \
   OP_ARITHMETIC_HELPER(Add, +) \
   OP_ARITHMETIC_HELPER(Sub, -) \
@@ -104,8 +110,6 @@ public:
 template<typename Dtype, typename T>
 class Expression {
 public:
-  Expression(const Expression&) = delete;
-
   Expression& operator=(const Expression&) = delete;
 
   const T& cast() const {
@@ -147,10 +151,7 @@ public:
 
   template<typename T>
   auto operator=(const Expression<Dtype, T>& a) -> scalar<Dtype>& {
-    if(this != &a) {
-      data = a.value();
-    }
-
+    data = a.value();
     return *this;
   }
 
@@ -162,19 +163,28 @@ public:
     return *this;
   }
 
-  template<class T>
-  auto operator+=(const Expression<Dtype, T>& a) -> scalar<Dtype>& {
-    return *this = (*this + a);
+#define OP_SELF(OUTER_OP_, OP_) \
+  template<typename T> \
+  auto operator OUTER_OP_ (const Expression<Dtype, T>& rhs) -> scalar<Dtype>& { \
+    *this = (*this OP_ rhs); \
+    return *this; \
+  } \
+  auto operator OUTER_OP_ (const Dtype& other) -> scalar<Dtype>&  { \
+    value OUTER_OP_ other; \
+    return *this; \
   }
+ADOUBLE_SELF_OPERATORS_LIST
+#undef ADOUBLE_SELF_OPERATORS_LIST
+#undef OP_SELF
 
 #define OP_UNITSTEP(OP_) \
   auto operator OP_ () -> scalar<Dtype>& { \
-    OP_ a; \
+    OP_ data; \
     return *this; \
   } \
-  auto operator OP_ (int) -> scalar<Dtype>& { \
-	scalar<Dtype> res(a); \
-    OP_ a; \
+  auto operator OP_ (int) -> scalar<Dtype> { \
+	scalar<Dtype> res(data); \
+    OP_ data; \
     return res; \
   }
 ADOUBLE_UNITSTEP_OPERATORS_LIST
@@ -277,7 +287,7 @@ private: \
   const Dtype t; \
   const U& u; \
 public: \
-  explicit NAME##RightExpr(const Dtype& a, const Expression<Dtype, T>& b) \
+  explicit NAME##RightExpr(const Dtype& a, const Expression<Dtype, U>& b) \
     : t(a) \
     , u(b.cast()) \
   { \

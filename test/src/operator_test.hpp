@@ -13,7 +13,7 @@
 #error Need name of the operator overloading class
 #endif
 
-SCENARIO("Overloaded Arithmetic Operator Test", "["  TEST_PREFIX "operator]") {
+SCENARIO("Overloaded Arithmetic Operator Test with class: " T_STRINGIFY(OO_TYPE), "["  TEST_PREFIX "operator]") {
   GIVEN("Two operands of type " T_STRINGIFY(OO_TYPE) " a, b") {
     OO_TYPE a = 10.0;
     OO_TYPE b = 2.0;
@@ -33,7 +33,7 @@ SCENARIO("Overloaded Arithmetic Operator Test", "["  TEST_PREFIX "operator]") {
   }
 }
 
-SCENARIO("Overloaded Boolean Operator Test", "[" TEST_PREFIX "bool_operator]") {
+SCENARIO("Overloaded Boolean Operator Test with class: " T_STRINGIFY(OO_TYPE), "[" TEST_PREFIX "bool_operator]") {
   GIVEN("Two operands of type " T_STRINGIFY(OO_TYPE) " a, b") {
     OO_TYPE a = 10.0;
     OO_TYPE b = 2.0;
@@ -50,7 +50,7 @@ SCENARIO("Overloaded Boolean Operator Test", "[" TEST_PREFIX "bool_operator]") {
   }
 }
 
-SCENARIO("Unary Operator Test", "[" TEST_PREFIX "unary_operator]") {
+SCENARIO("Unary Operator Test with class: " T_STRINGIFY(OO_TYPE), "[" TEST_PREFIX "unary_operator]") {
   GIVEN("An operand of type " T_STRINGIFY(OO_TYPE) " a") {
     OO_TYPE a = 10.0;
 
