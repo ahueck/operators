@@ -1,22 +1,16 @@
 /*
- * adouble.h
+ * adouble_et.h
  *
  *  Created on: Feb 22, 2016
  *      Author: ahueck
  */
 
-#ifndef __adouble_et_H__
-#define __adouble_et_H__
+#ifndef CPP11_ADOUBLE_ET_H
+#define CPP11_ADOUBLE_ET_H
 
 #include <iostream>
 #include <type_traits>
 #include <cmath>
-
-//#include "binary_op.hpp"
-//#include "unary_op.hpp"
-
-namespace operators {
-namespace et {
 
 #define ADOUBLE_CMP_OPERATORS_LIST \
   OP_CMP(==) \
@@ -109,11 +103,11 @@ public:
 
 template<typename Dtype, typename T>
 class Expression {
-  //typedef typename TypeTraits<DType>::type real;
+public:
+  Expression(const Expression&) = delete;
 
   Expression& operator=(const Expression&) = delete;
 
-public:
   const T& cast() const {
     return static_cast<const T&>(*this);
   }
@@ -132,11 +126,11 @@ public:
   scalar() : data() {
   }
 
-  scalar(typename TypeTraits<Dtype>::cref_type a) : data(a) {
+  scalar(const Dtype& a) : data(a) {
   }
 
   template<typename T>
-  scalar(const Expression<Dtype, T>& a) : data(a.data) {
+  scalar(const Expression<Dtype, T>& a) : data(a.value()) {
   }
 
   scalar(const scalar<Dtype>& a) : data(a.data) {
@@ -146,7 +140,7 @@ public:
     return data;
   }
 
-  auto operator=(typename TypeTraits<Dtype>::cref_type a) -> scalar<Dtype>& {
+  auto operator=(const Dtype& a) -> scalar<Dtype>& {
     data = a;
     return *this;
   }
@@ -211,9 +205,10 @@ std::ostream& operator<<(std::ostream& os, const Expression<Dtype, T>& a){
   }
 ADOUBLE_CMP_OPERATORS_LIST
 #undef ADOUBLE_CMP_OPERATORS_LIST
+#undef OP_CMP
 
 
-#define OP_UNARY(name, OUTER_F, INNER_F) \
+#define OP_UNARY(name, F_, INNER_F_) \
 template<typename Dtype, typename T> \
 class name##Expr: public Expression<Dtype, name##Expr<Dtype, T>> { \
 private: \
@@ -223,18 +218,19 @@ public: \
     : t(a.cast()) \
   { \
   } \
-  auto value() const -> decltype(INNER_F(t.value())) { \
-    return INNER_F(t.value()); \
+  auto value() const -> decltype(INNER_F_(t.value())) { \
+    return INNER_F_(t.value()); \
   } \
 }; \
 \
 template <typename Dtype, typename T> \
-auto OUTER_F(const Expression<Dtype, T>& a) -> decltype(name##Expr<Dtype, T>(a.cast())) { \
+auto F_(const Expression<Dtype, T>& a) -> decltype(name##Expr<Dtype, T>(a.cast())) { \
   return name##Expr<Dtype, T>(a.cast()); \
 }
 ADOUBLE_UNARY_OPERATORS_LIST
 #undef ADOUBLE_UNARY_OPERATORS_LIST
 ADOUBLE_UNARY_MATH_LIST
+#undef ADOUBLE_UNARY_MATH_LIST
 #undef OP_UNARY
 
 
@@ -244,63 +240,63 @@ ADOUBLE_UNARY_MATH_LIST
     return lhs OP_ rhs; \
   }
 
-#define OP_BINARY(name, OUTER_F, INNER_F) \
+#define OP_BINARY(NAME, F_, INNER_F_) \
 template<typename Dtype, typename T, typename U> \
-class name##Expr: public Expression<Dtype, name##Expr<Dtype, T, U>> { \
+class NAME##Expr: public Expression<Dtype, NAME##Expr<Dtype, T, U>> { \
 private: \
   const T& t; \
   const U& u; \
 public: \
-  explicit name##Expr(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) \
+  explicit NAME##Expr(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) \
     : t(a.cast()) \
     , u(b.cast()) \
   { \
   } \
-  auto value() const -> decltype(INNER_F(t.value(), u.value())) { \
-    return INNER_F(t.value(), u.value());  \
+  auto value() const -> decltype(INNER_F_(t.value(), u.value())) { \
+    return INNER_F_(t.value(), u.value());  \
   } \
 };\
 template<typename Dtype, typename T> \
-class name##LeftExpr: public Expression<Dtype, name##LeftExpr<Dtype, T>> { \
+class NAME##LeftExpr: public Expression<Dtype, NAME##LeftExpr<Dtype, T>> { \
 private: \
   const T& t; \
   const Dtype u; \
 public: \
-  explicit name##LeftExpr(const Expression<Dtype, T>& a, const Dtype& b) \
+  explicit NAME##LeftExpr(const Expression<Dtype, T>& a, const Dtype& b) \
     : t(a.cast()) \
     , u(b) \
   { \
   } \
-  auto value() const -> decltype(INNER_F(t.value(), u)) { \
-    return INNER_F(t.value(), u); \
+  auto value() const -> decltype(INNER_F_(t.value(), u)) { \
+    return INNER_F_(t.value(), u); \
   } \
 }; \
 template<typename Dtype, typename U> \
-class name##RightExpr: public Expression<Dtype, name##RightExpr<Dtype, U>> { \
+class NAME##RightExpr: public Expression<Dtype, NAME##RightExpr<Dtype, U>> { \
 private: \
   const Dtype t; \
   const U& u; \
 public: \
-  explicit name##RightExpr(const Dtype& a, const Expression<Dtype, T>& b) \
+  explicit NAME##RightExpr(const Dtype& a, const Expression<Dtype, T>& b) \
     : t(a) \
     , u(b.cast()) \
   { \
   } \
-  auto value() const -> decltype(INNER_F(t, u.value())) { \
-    return INNER_F(t, u.value()); \
+  auto value() const -> decltype(INNER_F_(t, u.value())) { \
+    return INNER_F_(t, u.value()); \
   } \
 }; \
 template <typename Dtype, typename T, typename U> \
-inline auto OUTER_F(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) -> decltype(name##Expr<Dtype, T, U>(a.cast(), b.cast())) { \
-  return name##Expr<Dtype, T, U>(a.cast(), b.cast()); \
+inline auto F_(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) -> decltype(NAME##Expr<Dtype, T, U>(a.cast(), b.cast())) { \
+  return NAME##Expr<Dtype, T, U>(a.cast(), b.cast()); \
 } \
 template <typename Dtype, typename T> \
-inline auto OUTER_F(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(name##LeftExpr<Dtype, T>(a.cast(), b)) { \
-  return name##LeftExpr<Dtype, T>(a.cast(), b); \
+inline auto F_(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(NAME##LeftExpr<Dtype, T>(a.cast(), b)) { \
+  return NAME##LeftExpr<Dtype, T>(a.cast(), b); \
 } \
 template <typename Dtype, typename U> \
-inline auto OUTER_F(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(name##LeftExpr<Dtype, U>(a, b.cast())) { \
-  return name##RightExpr<Dtype, U>(a, b.value()); \
+inline auto F_(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(NAME##LeftExpr<Dtype, U>(a, b.cast())) { \
+  return NAME##RightExpr<Dtype, U>(a, b.value()); \
 }
 ADOUBLE_ARITHMETIC_OPERATORS_LIST
 #undef ADOUBLE_ARITHMETIC_OPERATORS_LIST
@@ -312,7 +308,4 @@ ADOUBLE_BINARY_MATH_LIST
 
 using adouble = scalar<double>;
 
-}
-}
-
-#endif /* __adouble_et_H__ */
+#endif /* CPP11_ADOUBLE_ET_H */

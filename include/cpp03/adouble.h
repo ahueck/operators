@@ -1,21 +1,21 @@
 /*
  * adouble.h
  *
- *  Created on: Feb 24, 2016
+ *  Created on: Nov 07, 2015
  *      Author: ahueck
  */
 
 #include <iostream>
 #include <cmath>
 
-#ifndef ADOUBLE_H_
-#define ADOUBLE_H_
+#ifndef CPP03_ADOUBLE_H
+#define CPP03_ADOUBLE_H
 
 #define ADOUBLE_SELF_OPERATORS_LIST \
   OP_SELF(+=) \
   OP_SELF(-=) \
   OP_SELF(*=) \
-  OP_SELF(/=) \
+  OP_SELF(/=)
 
 #define ADOUBLE_CMP_OPERATORS_LIST \
   OP_CMP(==) \
@@ -235,4 +235,4 @@ std::ostream& operator<< (std::ostream& os, const adouble& arg) {
   return os;
 }
 
-#endif /* ADOUBLE_H_ */
+#endif /* CPP03_ADOUBLE_H */
