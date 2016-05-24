@@ -12,8 +12,8 @@
 #include <type_traits>
 #include <cmath>
 
-#include "binary_op.hpp"
-#include "unary_op.hpp"
+//#include "binary_op.hpp"
+//#include "unary_op.hpp"
 
 namespace operators {
 namespace et {
@@ -27,72 +27,76 @@ namespace et {
   OP_CMP(>)
 
 #define ADOUBLE_ARITHMETIC_OPERATORS_LIST \
-  OP_ARITHMETIC(Add, +) \
-  OP_ARITHMETIC(Mul, -) \
-  OP_ARITHMETIC(Sub, *) \
-  OP_ARITHMETIC(Div, /)
+  OP_ARITHMETIC_HELPER(Add, +) \
+  OP_ARITHMETIC_HELPER(Sub, -) \
+  OP_ARITHMETIC_HELPER(Mul, *) \
+  OP_ARITHMETIC_HELPER(Div, /) \
+  OP_BINARY(Add, operator +, AddHelper) \
+  OP_BINARY(Sub, operator -, SubHelper) \
+  OP_BINARY(Mul, operator *, MulHelper) \
+  OP_BINARY(Div, operator /, DivHelper)
 
 #define ADOUBLE_UNITSTEP_OPERATORS_LIST \
   OP_UNITSTEP(++) \
   OP_UNITSTEP(--)
 
 #define ADOUBLE_UNARY_OPERATORS_LIST \
-  OP_UNARY(-)
+  OP_UNARY(UnaryMinus, operator-, -)
 
 #define ADOUBLE_UNARY_MATH_LIST \
-  OP_MATH_UN(round) \
-  OP_MATH_UN(ceil) \
-  OP_MATH_UN(floor) \
-  OP_MATH_UN(fabs) \
+  OP_UNARY(Round, round, std::round) \
+  OP_UNARY(Ceil, ceil, std::ceil) \
+  OP_UNARY(Floor, floor, std::floor) \
+  OP_UNARY(Fabs, fabs, std::fabs) \
   /* for compatibility: */ \
-  OP_MATH_UN(abs) \
+  OP_UNARY(Abs, abs, std::abs) \
   /* cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html */ \
-  OP_MATH_UN(exp) \
-  OP_MATH_UN(exp2) \
-  OP_MATH_UN(exp10) \
-  OP_MATH_UN(log) \
-  OP_MATH_UN(log10) \
-  OP_MATH_UN(log2) \
-  OP_MATH_UN(logb) \
-  OP_MATH_UN(sqrt) \
-  OP_MATH_UN(cbrt) \
-  OP_MATH_UN(expm1) \
-  OP_MATH_UN(log1p) \
+  OP_UNARY(Exp, exp, std::exp) \
+  OP_UNARY(Exp2, exp2, std::exp2) \
+  OP_UNARY(Exp10, exp10, exp10) \
+  OP_UNARY(Log, log, std::log) \
+  OP_UNARY(Log10, log10, std::log10) \
+  OP_UNARY(Log2, log2, std::log2) \
+  OP_UNARY(Logb, logb, std::logb) \
+  OP_UNARY(Sqrt, sqrt, std::sqrt) \
+  OP_UNARY(Cbrt, cbrt, std::cbrt) \
+  OP_UNARY(Expm1, expm1, std::expm1) \
+  OP_UNARY(Log1p, log1p, std::log1p) \
   /* cf. https://www.gnu.org/software/libc/manual/html_node/Trig-Functions.html */ \
-  OP_MATH_UN(sin) \
-  OP_MATH_UN(cos) \
-  OP_MATH_UN(tan) \
-  /* OP_MATH_UN(sincos) */ \
+  OP_UNARY(Sin, sin, std::sin) \
+  OP_UNARY(Cos, cos, std::cos) \
+  OP_UNARY(Tan, tan, std::tan) \
+  /* OP_UNARY(Sincos, sincos, std::sincos) */ \
   /* cf. https://www.gnu.org/software/libc/manual/html_node/Inverse-Trig-Functions.html */ \
-  OP_MATH_UN(asin) \
-  OP_MATH_UN(acos) \
-  OP_MATH_UN(atan) \
+  OP_UNARY(Asin, asin, std::asin) \
+  OP_UNARY(Acos, acos, std::acos) \
+  OP_UNARY(Atan, atan, std::atan) \
   /* cf. https://www.gnu.org/software/libc/manual/html_node/Hyperbolic-Functions.htm */ \
-  OP_MATH_UN(sinh) \
-  OP_MATH_UN(cosh) \
-  OP_MATH_UN(tanh) \
-  OP_MATH_UN(asinh) \
-  OP_MATH_UN(acosh) \
-  OP_MATH_UN(atanh) \
+  OP_UNARY(Sinh, sinh, std::sinh) \
+  OP_UNARY(Cosh, cosh, std::cosh) \
+  OP_UNARY(Tanh, tanh, std::tanh) \
+  OP_UNARY(Asinh, asinh, std::asinh) \
+  OP_UNARY(Acosh, acosh, std::acosh) \
+  OP_UNARY(Atanh, atanh, std::atanh) \
   /* cf. https://www.gnu.org/software/libc/manual/html_node/Special-Functions.html */ \
-  OP_MATH_UN(erf) \
-  OP_MATH_UN(erfc) \
-  OP_MATH_UN(lgamma) \
+  OP_UNARY(Erf, erf, std::erf) \
+  OP_UNARY(Erfc, erfc, std::erfc) \
+  OP_UNARY(Lgamma, lgamma, std::lgamma) \
   /* Missing: "lgamma_r (double x, int *signp)" */ \
-  OP_MATH_UN(gamma) \
-  OP_MATH_UN(j0) \
-  OP_MATH_UN(j1) \
-  OP_MATH_UN(y0) \
-  OP_MATH_UN(y1)
+  OP_UNARY(Gamma, gamma, gamma) \
+  OP_UNARY(J0, j0, j0) \
+  OP_UNARY(J1, j1, j1) \
+  OP_UNARY(Y0, y0, y0) \
+  OP_UNARY(Y1, y1, y1)
 
 #define ADOUBLE_BINARY_MATH_LIST \
-  OP_MATH_BIN(pow) \
-  OP_MATH_BIN(hypot) \
-  OP_MATH_BIN(atan2) \
-  OP_MATH_BIN(fmin) \
-  OP_MATH_BIN(fmax) \
-  OP_MATH_BIN(min, std::) \
-  OP_MATH_BIN(max, std::)
+  OP_BINARY(Pow, pow, std::pow) \
+  OP_BINARY(Hypot, hypot, std::hypot) \
+  OP_BINARY(Atan2, atan2, std::atan2) \
+  OP_BINARY(Fmin, fmin, std::fmin) \
+  OP_BINARY(Fmax, fmax, std::fmax) \
+  OP_BINARY(Min, min, std::min) \
+  OP_BINARY(Max, max, std::max)
 
 
 template<typename T>
@@ -169,22 +173,13 @@ public:
     return *this = (*this + a);
   }
 
-#define OP_UNARY(OP_) \
-  auto operator OP_ () -> scalar<Dtype>& { \
-    a = OP_ a; \
-    return *this; \
-  }
-ADOUBLE_UNARY_OPERATORS_LIST
-#undef ADOUBLE_UNARY_OPERATORS_LIST
-#undef OP_UNARY
-
 #define OP_UNITSTEP(OP_) \
   auto operator OP_ () -> scalar<Dtype>& { \
     OP_ a; \
     return *this; \
   } \
   auto operator OP_ (int) -> scalar<Dtype>& { \
-    adouble res(a); \
+	scalar<Dtype> res(a); \
     OP_ a; \
     return res; \
   }
@@ -199,6 +194,7 @@ std::ostream& operator<<(std::ostream& os, const Expression<Dtype, T>& a){
   os << a.value();
   return os;
 }
+
 
 #define OP_CMP(OP_) \
   template <typename Dtype, typename T> \
@@ -216,7 +212,39 @@ std::ostream& operator<<(std::ostream& os, const Expression<Dtype, T>& a){
 ADOUBLE_CMP_OPERATORS_LIST
 #undef ADOUBLE_CMP_OPERATORS_LIST
 
-#define OP_ARITHMETIC(name, op) \
+
+#define OP_UNARY(name, OUTER_F, INNER_F) \
+template<typename Dtype, typename T> \
+class name##Expr: public Expression<Dtype, name##Expr<Dtype, T>> { \
+private: \
+  const T& t; \
+public: \
+  explicit name##Expr(const Expression<Dtype, T>& a) \
+    : t(a.cast()) \
+  { \
+  } \
+  auto value() const -> decltype(INNER_F(t.value())) { \
+    return INNER_F(t.value()); \
+  } \
+}; \
+\
+template <typename Dtype, typename T> \
+auto OUTER_F(const Expression<Dtype, T>& a) -> decltype(name##Expr<Dtype, T>(a.cast())) { \
+  return name##Expr<Dtype, T>(a.cast()); \
+}
+ADOUBLE_UNARY_OPERATORS_LIST
+#undef ADOUBLE_UNARY_OPERATORS_LIST
+ADOUBLE_UNARY_MATH_LIST
+#undef OP_UNARY
+
+
+#define OP_ARITHMETIC_HELPER(NAME, OP_) \
+  template<typename T, typename U> \
+  inline auto NAME##Helper(const T& lhs, const U& rhs) -> decltype(lhs OP_ rhs) { \
+    return lhs OP_ rhs; \
+  }
+
+#define OP_BINARY(name, OUTER_F, INNER_F) \
 template<typename Dtype, typename T, typename U> \
 class name##Expr: public Expression<Dtype, name##Expr<Dtype, T, U>> { \
 private: \
@@ -228,8 +256,8 @@ public: \
     , u(b.cast()) \
   { \
   } \
-  auto value() const -> decltype(t.value() op u.value()) { \
-    return t.value() op u.value();  \
+  auto value() const -> decltype(INNER_F(t.value(), u.value())) { \
+    return INNER_F(t.value(), u.value());  \
   } \
 };\
 template<typename Dtype, typename T> \
@@ -243,8 +271,8 @@ public: \
     , u(b) \
   { \
   } \
-  auto value() const -> decltype(t.value() op u) { \
-    return t.value() op u; \
+  auto value() const -> decltype(INNER_F(t.value(), u)) { \
+    return INNER_F(t.value(), u); \
   } \
 }; \
 template<typename Dtype, typename U> \
@@ -258,76 +286,28 @@ public: \
     , u(b.cast()) \
   { \
   } \
-  auto value() const -> decltype(t op u.value()) { \
-    return t op u.value(); \
+  auto value() const -> decltype(INNER_F(t, u.value())) { \
+    return INNER_F(t, u.value()); \
   } \
 }; \
-	\
 template <typename Dtype, typename T, typename U> \
-inline auto operator op(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) -> decltype(name##Expr<Dtype, T, U>(a.cast(), b.cast())) { \
+inline auto OUTER_F(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) -> decltype(name##Expr<Dtype, T, U>(a.cast(), b.cast())) { \
   return name##Expr<Dtype, T, U>(a.cast(), b.cast()); \
 } \
 template <typename Dtype, typename T> \
-inline auto operator op(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(name##LeftExpr<Dtype, T>(a.cast(), b)) { \
+inline auto OUTER_F(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(name##LeftExpr<Dtype, T>(a.cast(), b)) { \
   return name##LeftExpr<Dtype, T>(a.cast(), b); \
 } \
 template <typename Dtype, typename U> \
-inline auto operator op(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(name##LeftExpr<Dtype, U>(a, b.cast())) { \
+inline auto OUTER_F(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(name##LeftExpr<Dtype, U>(a, b.cast())) { \
   return name##RightExpr<Dtype, U>(a, b.value()); \
 }
 ADOUBLE_ARITHMETIC_OPERATORS_LIST
 #undef ADOUBLE_ARITHMETIC_OPERATORS_LIST
-#undef OP_ARITHMETIC
-
-__trans_math(Fabs, fabs)
-__trans_math_std(Abs, abs)
-__trans_math(Round, round)
-__trans_math(Ceil, ceil)
-__trans_math(Floor, floor)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
-__trans_math(Exp, exp)
-__trans_math(Exp2, exp2)
-__trans_math(Exp10, exp10)
-__trans_math(Log, log)
-__trans_math(Log10, log10)
-__trans_math(Log2, log2)
-__trans_math(Logb, logb)
-__trans_math(Sqrt, sqrt)
-__trans_math(Cbrt, cbrt)
-__trans_math(Expm1, expm1)
-__trans_math(Log1p, log1p)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Trig-Functions.html
-__trans_math(Sin, sin)
-__trans_math(Cos, cos)
-__trans_math(Tan, tan)
-__trans_math(Sincos, sincos)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Inverse-Trig-Functions.html
-__trans_math(Asin, asin)
-__trans_math(Acos, acos)
-__trans_math(Atan, atan)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Hyperbolic-Functions.htm
-__trans_math(Sinh, sinh)
-__trans_math(Cosh, cosh)
-__trans_math(Tanh, tanh)
-__trans_math(Asinh, asinh)
-__trans_math(Acosh, acosh)
-__trans_math(Atanh, atanh)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Special-Functions.html
-__trans_math(Erf, erf)
-__trans_math(Erfc, erfc)
-__trans_math(Lgamma, lgamma)
-// Missing: "lgamma_r (double x, int *signp)"
-__trans_math(Gamma, gamma)
-__trans_math(J0, j0)
-__trans_math(J1, j1)
-__trans_math(Y0, y0)
-__trans_math(Y1, y1)
-
-__trans_math_2(Pow, pow)
-__trans_math_2(Hypot, hypot)
-__trans_math_2(Atan2, atan2)
-__trans_math_2_std(Min, min)
-__trans_math_2_std(Max, max)
+#undef OP_ARITHMETIC_HELPER
+ADOUBLE_BINARY_MATH_LIST
+#undef ADOUBLE_BINARY_MATH_LIST
+#undef OP_BINARY
 
 
 using adouble = scalar<double>;
