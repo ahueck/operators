@@ -60,4 +60,13 @@ WHEN("a" T_STRINGIFY(OP) "=b") { \
     } \
   } \
 }
+
+#define _test_unary_t(EXPR, EXPECTED) \
+WHEN(T_STRINGIFY(EXPR)) { \
+  EXPR; \
+  THEN("a is changed") { \
+    REQUIRE(val(a) == Approx(EXPECTED)); \
+  } \
+}
+
 #endif /* TESTUTIL_H_ */

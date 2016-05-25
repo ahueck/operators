@@ -1,22 +1,103 @@
 /*
- * adouble.h
+ * adouble_et.h
  *
  *  Created on: Feb 22, 2016
  *      Author: ahueck
  */
 
-#ifndef __adouble_et_H__
-#define __adouble_et_H__
+#ifndef CPP11_ADOUBLE_ET_H
+#define CPP11_ADOUBLE_ET_H
 
 #include <iostream>
 #include <type_traits>
 #include <cmath>
 
-#include "binary_op.hpp"
-#include "unary_op.hpp"
+#define ADOUBLE_CMP_OPERATORS_LIST \
+  OP_CMP(==) \
+  OP_CMP(!=) \
+  OP_CMP(>=) \
+  OP_CMP(<=) \
+  OP_CMP(<) \
+  OP_CMP(>)
 
-namespace operators {
-namespace et {
+#define ADOUBLE_SELF_OPERATORS_LIST \
+  OP_SELF(+=, +) \
+  OP_SELF(-=, -) \
+  OP_SELF(*=, *) \
+  OP_SELF(/=, /)
+
+#define ADOUBLE_ARITHMETIC_OPERATORS_LIST \
+  OP_ARITHMETIC_HELPER(Add, +) \
+  OP_ARITHMETIC_HELPER(Sub, -) \
+  OP_ARITHMETIC_HELPER(Mul, *) \
+  OP_ARITHMETIC_HELPER(Div, /) \
+  OP_BINARY(Add, operator +, AddHelper) \
+  OP_BINARY(Sub, operator -, SubHelper) \
+  OP_BINARY(Mul, operator *, MulHelper) \
+  OP_BINARY(Div, operator /, DivHelper)
+
+#define ADOUBLE_UNITSTEP_OPERATORS_LIST \
+  OP_UNITSTEP(++) \
+  OP_UNITSTEP(--)
+
+#define ADOUBLE_UNARY_OPERATORS_LIST \
+  OP_UNARY(UnaryMinus, operator-, -)
+
+#define ADOUBLE_UNARY_MATH_LIST \
+  OP_UNARY(Round, round, std::round) \
+  OP_UNARY(Ceil, ceil, std::ceil) \
+  OP_UNARY(Floor, floor, std::floor) \
+  OP_UNARY(Fabs, fabs, std::fabs) \
+  /* for compatibility: */ \
+  OP_UNARY(Abs, abs, std::abs) \
+  /* cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html */ \
+  OP_UNARY(Exp, exp, std::exp) \
+  OP_UNARY(Exp2, exp2, std::exp2) \
+  OP_UNARY(Exp10, exp10, exp10) \
+  OP_UNARY(Log, log, std::log) \
+  OP_UNARY(Log10, log10, std::log10) \
+  OP_UNARY(Log2, log2, std::log2) \
+  OP_UNARY(Logb, logb, std::logb) \
+  OP_UNARY(Sqrt, sqrt, std::sqrt) \
+  OP_UNARY(Cbrt, cbrt, std::cbrt) \
+  OP_UNARY(Expm1, expm1, std::expm1) \
+  OP_UNARY(Log1p, log1p, std::log1p) \
+  /* cf. https://www.gnu.org/software/libc/manual/html_node/Trig-Functions.html */ \
+  OP_UNARY(Sin, sin, std::sin) \
+  OP_UNARY(Cos, cos, std::cos) \
+  OP_UNARY(Tan, tan, std::tan) \
+  /* OP_UNARY(Sincos, sincos, std::sincos) */ \
+  /* cf. https://www.gnu.org/software/libc/manual/html_node/Inverse-Trig-Functions.html */ \
+  OP_UNARY(Asin, asin, std::asin) \
+  OP_UNARY(Acos, acos, std::acos) \
+  OP_UNARY(Atan, atan, std::atan) \
+  /* cf. https://www.gnu.org/software/libc/manual/html_node/Hyperbolic-Functions.htm */ \
+  OP_UNARY(Sinh, sinh, std::sinh) \
+  OP_UNARY(Cosh, cosh, std::cosh) \
+  OP_UNARY(Tanh, tanh, std::tanh) \
+  OP_UNARY(Asinh, asinh, std::asinh) \
+  OP_UNARY(Acosh, acosh, std::acosh) \
+  OP_UNARY(Atanh, atanh, std::atanh) \
+  /* cf. https://www.gnu.org/software/libc/manual/html_node/Special-Functions.html */ \
+  OP_UNARY(Erf, erf, std::erf) \
+  OP_UNARY(Erfc, erfc, std::erfc) \
+  OP_UNARY(Lgamma, lgamma, std::lgamma) \
+  /* Missing: "lgamma_r (double x, int *signp)" */ \
+  OP_UNARY(Gamma, gamma, gamma) \
+  OP_UNARY(J0, j0, j0) \
+  OP_UNARY(J1, j1, j1) \
+  OP_UNARY(Y0, y0, y0) \
+  OP_UNARY(Y1, y1, y1)
+
+#define ADOUBLE_BINARY_MATH_LIST \
+  OP_BINARY(Pow, pow, std::pow) \
+  OP_BINARY(Hypot, hypot, std::hypot) \
+  OP_BINARY(Atan2, atan2, std::atan2) \
+  OP_BINARY(Fmin, fmin, std::fmin) \
+  OP_BINARY(Fmax, fmax, std::fmax) \
+  OP_BINARY(Min, min, std::min) \
+  OP_BINARY(Max, max, std::max)
+
 
 template<typename T>
 class TypeTraits {
@@ -26,180 +107,90 @@ public:
   typedef type const &cref_type;
 };
 
-template<typename DType, typename T>
+template<typename Dtype, typename T>
 class Expression {
-  //typedef typename TypeTraits<DType>::type real;
-
+public:
   Expression& operator=(const Expression&) = delete;
 
-public:
   const T& cast() const {
     return static_cast<const T&>(*this);
   }
 
-  auto value() const -> typename TypeTraits<DType>::type {
+  auto value() const -> Dtype {
     return cast().value();
   }
 };
 
-__binary_op(Add, +)
-__binary_op(Mul, *)
-__binary_op(Sub, -)
-__binary_op(Div, /)
-
-__binary_op_cmpl(==)
-__binary_op_cmpl(!=)
-__binary_op_cmpl(<)
-__binary_op_cmpl(>)
-__binary_op_cmpl(>=)
-__binary_op_cmpl(<=)
-
-__trans_math(Fabs, fabs)
-__trans_math_std(Abs, abs)
-__trans_math(Round, round)
-__trans_math(Ceil, ceil)
-__trans_math(Floor, floor)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Exponents-and-Logarithms.html
-__trans_math(Exp, exp)
-__trans_math(Exp2, exp2)
-__trans_math(Exp10, exp10)
-__trans_math(Log, log)
-__trans_math(Log10, log10)
-__trans_math(Log2, log2)
-__trans_math(Logb, logb)
-__trans_math(Sqrt, sqrt)
-__trans_math(Cbrt, cbrt)
-__trans_math(Expm1, expm1)
-__trans_math(Log1p, log1p)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Trig-Functions.html
-__trans_math(Sin, sin)
-__trans_math(Cos, cos)
-__trans_math(Tan, tan)
-__trans_math(Sincos, sincos)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Inverse-Trig-Functions.html
-__trans_math(Asin, asin)
-__trans_math(Acos, acos)
-__trans_math(Atan, atan)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Hyperbolic-Functions.htm
-__trans_math(Sinh, sinh)
-__trans_math(Cosh, cosh)
-__trans_math(Tanh, tanh)
-__trans_math(Asinh, asinh)
-__trans_math(Acosh, acosh)
-__trans_math(Atanh, atanh)
-// cf. https://www.gnu.org/software/libc/manual/html_node/Special-Functions.html
-__trans_math(Erf, erf)
-__trans_math(Erfc, erfc)
-__trans_math(Lgamma, lgamma)
-// Missing: "lgamma_r (double x, int *signp)"
-__trans_math(Gamma, gamma)
-__trans_math(J0, j0)
-__trans_math(J1, j1)
-__trans_math(Y0, y0)
-__trans_math(Y1, y1)
-
-__trans_math_2(Pow, pow)
-__trans_math_2(Hypot, hypot)
-__trans_math_2(Atan2, atan2)
-__trans_math_2_std(Min, min)
-__trans_math_2_std(Max, max)
-
 template<typename Dtype>
-class number : public Expression<Dtype, number<Dtype>> {
-  //typedef typename TypeTraits<Dtype>::type real;
-
-public:
-  number() : data() {
-  }
-
-  number(typename TypeTraits<Dtype>::cref_type a) : data(a) {
-  }
-
-  template<typename T>
-  number(const Expression<Dtype, T>& a) : data(a.value()) {
-  }
-
-  number(const number<Dtype>& a) : data(a.data) {
-  }
-
-  inline auto value() const -> typename TypeTraits<Dtype>::type {
-    return data;
-  }
-
-  inline auto value() -> typename TypeTraits<Dtype>::ref_type {
-    return data;
-  }
-
-  inline void set_value(typename TypeTraits<Dtype>::cref_type a) {
-    data = a;
-  }
-
-  inline auto operator=(typename TypeTraits<Dtype>::cref_type a) -> number<Dtype>& {
-    data = a;
-    return *this;
-  }
-
-  template<typename T>
-  inline auto operator=(const Expression<Dtype, T>& a) -> number<Dtype>& {
-    if(this != &a) {
-      data = a.value();
-    }
-    return *this;
-  }
-
-  inline auto operator=(const number<Dtype>& a) -> number<Dtype>& {
-    if(this != &a) {
-      data = a.data;
-    }
-    return *this;
-  }
-
-  template<class T>
-  inline auto operator+=(const Expression<Dtype, T>& a) -> number<Dtype>& {
-    *this = (*this + a);
-    return *this;
-  }
-
-  inline auto operator+=(typename TypeTraits<Dtype>::cref_type a) -> number<Dtype>& {
-    data += a;
-    return *this;
-  }
-
-  template<class T>
-  inline auto operator-=(const Expression<Dtype, T>& a) -> number<Dtype>& {
-    *this = (*this - a);
-    return *this;
-  }
-
-  inline auto operator-=(typename TypeTraits<Dtype>::cref_type a) -> number<Dtype>& {
-    data -= a;
-    return *this;
-  }
-
-  inline auto operator++() -> number<Dtype>& {
-     *this += Dtype(1.0);
-     return *this;
-   }
-
-  inline auto operator++(int) -> number<Dtype> {
-     number<Dtype> res(*this);
-     ++(*this);
-     return res;
-   }
-
-  inline auto operator--() -> number<Dtype>& {
-     *this -= Dtype(1.0);
-     return *this;
-   }
-
-  inline auto operator--(int) -> number<Dtype> {
-     number<Dtype> res(*this);
-     --(*this);
-     return res;
-   }
-
+class scalar : public Expression<Dtype, scalar<Dtype>> {
 private:
   Dtype data;
+
+public:
+  scalar() : data() {
+  }
+
+  scalar(const Dtype& a) : data(a) {
+  }
+
+  template<typename T>
+  scalar(const Expression<Dtype, T>& a) : data(a.value()) {
+  }
+
+  scalar(const scalar<Dtype>& a) : data(a.data) {
+  }
+
+  auto value() const -> Dtype {
+    return data;
+  }
+
+  auto operator=(const Dtype& a) -> scalar<Dtype>& {
+    data = a;
+    return *this;
+  }
+
+  template<typename T>
+  auto operator=(const Expression<Dtype, T>& a) -> scalar<Dtype>& {
+    data = a.value();
+    return *this;
+  }
+
+  auto operator=(const scalar<Dtype>& a) -> scalar<Dtype>& {
+    if(this != &a) {
+      data = a.value;
+    }
+
+    return *this;
+  }
+
+#define OP_SELF(OUTER_OP_, OP_) \
+  template<typename T> \
+  auto operator OUTER_OP_ (const Expression<Dtype, T>& rhs) -> scalar<Dtype>& { \
+    *this = (*this OP_ rhs); \
+    return *this; \
+  } \
+  auto operator OUTER_OP_ (const Dtype& other) -> scalar<Dtype>&  { \
+    value OUTER_OP_ other; \
+    return *this; \
+  }
+ADOUBLE_SELF_OPERATORS_LIST
+#undef ADOUBLE_SELF_OPERATORS_LIST
+#undef OP_SELF
+
+#define OP_UNITSTEP(OP_) \
+  auto operator OP_ () -> scalar<Dtype>& { \
+    OP_ data; \
+    return *this; \
+  } \
+  auto operator OP_ (int) -> scalar<Dtype> { \
+	scalar<Dtype> res(data); \
+    OP_ data; \
+    return res; \
+  }
+ADOUBLE_UNITSTEP_OPERATORS_LIST
+#undef ADOUBLE_UNITSTEP_OPERATORS_LIST
+#undef OP_UNITSTEP
+
 };
 
 template<typename Dtype, class T>
@@ -208,24 +199,123 @@ std::ostream& operator<<(std::ostream& os, const Expression<Dtype, T>& a){
   return os;
 }
 
-typedef number<double> adouble;
 
+#define OP_CMP(OP_) \
+  template <typename Dtype, typename T> \
+  inline auto operator OP_(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(a.value() OP_ b) { \
+    return a.value() OP_ b; \
+  } \
+  template <typename Dtype, typename U> \
+  inline auto operator OP_(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(a OP_ b.value()) { \
+    return a OP_ b.value(); \
+  } \
+  template <typename Dtype, typename T, typename U> \
+  inline auto operator OP_(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) -> decltype(a.value() OP_ b.value()) { \
+    return a.value() OP_ b.value(); \
+  }
+ADOUBLE_CMP_OPERATORS_LIST
+#undef ADOUBLE_CMP_OPERATORS_LIST
+#undef OP_CMP
+
+
+#define OP_UNARY(name, F_, INNER_F_) \
+template<typename Dtype, typename T> \
+class name##Expr: public Expression<Dtype, name##Expr<Dtype, T>> { \
+private: \
+  const T& t; \
+public: \
+  explicit name##Expr(const Expression<Dtype, T>& a) \
+    : t(a.cast()) \
+  { \
+  } \
+  auto value() const -> decltype(INNER_F_(t.value())) { \
+    return INNER_F_(t.value()); \
+  } \
+}; \
+\
+template <typename Dtype, typename T> \
+auto F_(const Expression<Dtype, T>& a) -> decltype(name##Expr<Dtype, T>(a.cast())) { \
+  return name##Expr<Dtype, T>(a.cast()); \
 }
+ADOUBLE_UNARY_OPERATORS_LIST
+#undef ADOUBLE_UNARY_OPERATORS_LIST
+ADOUBLE_UNARY_MATH_LIST
+#undef ADOUBLE_UNARY_MATH_LIST
+#undef OP_UNARY
+
+
+#define OP_ARITHMETIC_HELPER(NAME, OP_) \
+  template<typename T, typename U> \
+  inline auto NAME##Helper(const T& lhs, const U& rhs) -> decltype(lhs OP_ rhs) { \
+    return lhs OP_ rhs; \
+  }
+
+#define OP_BINARY(NAME, F_, INNER_F_) \
+template<typename Dtype, typename T, typename U> \
+class NAME##Expr: public Expression<Dtype, NAME##Expr<Dtype, T, U>> { \
+private: \
+  const T& t; \
+  const U& u; \
+public: \
+  explicit NAME##Expr(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) \
+    : t(a.cast()) \
+    , u(b.cast()) \
+  { \
+  } \
+  auto value() const -> decltype(INNER_F_(t.value(), u.value())) { \
+    return INNER_F_(t.value(), u.value());  \
+  } \
+};\
+template<typename Dtype, typename T> \
+class NAME##LeftExpr: public Expression<Dtype, NAME##LeftExpr<Dtype, T>> { \
+private: \
+  const T& t; \
+  const Dtype u; \
+public: \
+  explicit NAME##LeftExpr(const Expression<Dtype, T>& a, const Dtype& b) \
+    : t(a.cast()) \
+    , u(b) \
+  { \
+  } \
+  auto value() const -> decltype(INNER_F_(t.value(), u)) { \
+    return INNER_F_(t.value(), u); \
+  } \
+}; \
+template<typename Dtype, typename U> \
+class NAME##RightExpr: public Expression<Dtype, NAME##RightExpr<Dtype, U>> { \
+private: \
+  const Dtype t; \
+  const U& u; \
+public: \
+  explicit NAME##RightExpr(const Dtype& a, const Expression<Dtype, U>& b) \
+    : t(a) \
+    , u(b.cast()) \
+  { \
+  } \
+  auto value() const -> decltype(INNER_F_(t, u.value())) { \
+    return INNER_F_(t, u.value()); \
+  } \
+}; \
+template <typename Dtype, typename T, typename U> \
+inline auto F_(const Expression<Dtype, T>& a, const Expression<Dtype, U>& b) -> decltype(NAME##Expr<Dtype, T, U>(a.cast(), b.cast())) { \
+  return NAME##Expr<Dtype, T, U>(a.cast(), b.cast()); \
+} \
+template <typename Dtype, typename T> \
+inline auto F_(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(NAME##LeftExpr<Dtype, T>(a.cast(), b)) { \
+  return NAME##LeftExpr<Dtype, T>(a.cast(), b); \
+} \
+template <typename Dtype, typename U> \
+inline auto F_(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(NAME##LeftExpr<Dtype, U>(a, b.cast())) { \
+  return NAME##RightExpr<Dtype, U>(a, b.value()); \
 }
+ADOUBLE_ARITHMETIC_OPERATORS_LIST
+#undef ADOUBLE_ARITHMETIC_OPERATORS_LIST
+#undef OP_ARITHMETIC_HELPER
+ADOUBLE_BINARY_MATH_LIST
+#undef ADOUBLE_BINARY_MATH_LIST
+#undef OP_BINARY
 
-#undef BIN_OP
-#undef BIN_OP_L
-#undef BIN_OP_R
-#undef __noop
-#undef __comma
-#undef __binary_op_cmpl
-#undef __trans_math_2
-#undef __trans_math_2_std
-#undef __binary_op
 
-#undef UN_OP
-#undef __trans_math
-#undef __trans_math_std
-#undef __unary_op
+using adouble = scalar<double>;
 
-#endif /* __adouble_et_H__ */
+#endif /* CPP11_ADOUBLE_ET_H */
