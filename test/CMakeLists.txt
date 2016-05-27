@@ -1,7 +1,9 @@
 include_directories(${PROJECT_SOURCE_DIR}/test/include)
 
-set(unit_test_names adouble_h)
+set(unit_test_names 
+  src/test_adouble_h.cpp 
+  src/test_adouble_et.cpp 
+)
 
-foreach(name ${unit_test_names})
-  add_executable(test_${name}${EXE_SUFFIX} src/test_${name}.cpp)
-endforeach()
+add_executable(test_runner${EXE_SUFFIX} src/main.cpp ${unit_test_names})
+add_executable(test_adouble_tao${EXE_SUFFIX} src/test_adouble_tao.cpp)

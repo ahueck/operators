@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <iostream>
 
-#define T_STRINGIFY_(A) # A
+#define T_STRINGIFY_(A) #A
 #define T_STRINGIFY__(A) T_STRINGIFY_(A)
 #define T_STRINGIFY(A) T_STRINGIFY__(A)
 
@@ -31,33 +31,42 @@ auto val(T&& t) -> decltype(v_impl(std::forward<T>(t), std::is_class<typename st
 }
 }
 
-#define _test_2_t(OP, EXPECTED) \
-WHEN("a" T_STRINGIFY(OP) "b") { \
-  const auto ad = val(a); \
-  const auto bd = val(b); \
-  auto c = a OP b; \
-  THEN("a new value is created") { \
-    auto cr = val(c); \
-    if(std::is_same<bool, decltype(cr)>::value) \
-	REQUIRE(EXPECTED == cr); \
-    else \
-	REQUIRE(EXPECTED == Approx(cr)); \
-    AND_THEN("The old values are unchanged") { \
-	REQUIRE(val(a) == ad); \
-	REQUIRE(val(b) == bd); \
-    } \
-  } \
-}
+#define _test_2_t(OP, EXPECTED)                    \
+  WHEN("a" T_STRINGIFY(OP) "b") {                  \
+    const auto ad = val(a);                        \
+    const auto bd = val(b);                        \
+    auto c = a OP b;                               \
+    THEN("a new value is created") {               \
+      auto cr = val(c);                            \
+      if (std::is_same<bool, decltype(cr)>::value) \
+        REQUIRE(EXPECTED == cr);                   \
+      else                                         \
+        REQUIRE(EXPECTED == Approx(cr));           \
+      AND_THEN("The old values are unchanged") {   \
+        REQUIRE(val(a) == ad);                     \
+        REQUIRE(val(b) == bd);                     \
+      }                                            \
+    }                                              \
+  }
 
-#define _test_1_t(OP, EXPECTED) \
-WHEN("a" T_STRINGIFY(OP) "=b") { \
-  const auto bd = val(b); \
-  a OP##= b; \
-  THEN("a is changed") { \
-    REQUIRE(val(a) == Approx(EXPECTED)); \
-    AND_THEN("b is unchanged") { \
-	REQUIRE(val(b) == bd); \
-    } \
-  } \
-}
+#define _test_1_t(OP, EXPECTED)            \
+  WHEN("a" T_STRINGIFY(OP) "=b") {         \
+    const auto bd = val(b);                \
+    a OP## = b;                            \
+    THEN("a is changed") {                 \
+      REQUIRE(val(a) == Approx(EXPECTED)); \
+      AND_THEN("b is unchanged") {         \
+        REQUIRE(val(b) == bd);             \
+      }                                    \
+    }                                      \
+  }
+
+#define _test_unary_t(EXPR, EXPECTED)      \
+  WHEN(T_STRINGIFY(EXPR)) {                \
+    EXPR;                                  \
+    THEN("a is changed") {                 \
+      REQUIRE(val(a) == Approx(EXPECTED)); \
+    }                                      \
+  }
+
 #endif /* TESTUTIL_H_ */
