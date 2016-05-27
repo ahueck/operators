@@ -170,7 +170,7 @@ public:
     return *this; \
   } \
   auto operator OUTER_OP_ (const Dtype& other) -> scalar<Dtype>&  { \
-    value OUTER_OP_ other; \
+    data OUTER_OP_ other; \
     return *this; \
   }
 ADOUBLE_SELF_OPERATORS_LIST
@@ -305,8 +305,8 @@ inline auto F_(const Expression<Dtype, T>& a, const Dtype& b) -> decltype(NAME##
   return NAME##LeftExpr<Dtype, T>(a.cast(), b); \
 } \
 template <typename Dtype, typename U> \
-inline auto F_(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(NAME##LeftExpr<Dtype, U>(a, b.cast())) { \
-  return NAME##RightExpr<Dtype, U>(a, b.value()); \
+inline auto F_(const Dtype& a, const Expression<Dtype, U>& b) -> decltype(NAME##RightExpr<Dtype, U>(a, b.cast())) { \
+  return NAME##RightExpr<Dtype, U>(a, b.cast()); \
 }
 ADOUBLE_ARITHMETIC_OPERATORS_LIST
 #undef ADOUBLE_ARITHMETIC_OPERATORS_LIST

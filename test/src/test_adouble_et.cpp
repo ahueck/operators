@@ -12,5 +12,5 @@
 #include <catch/catch.hpp>
 
 #define OO_TYPE scalar<double>
-#define TEST_PREFIX "etadouble_"
+#define TEST_PREFIX "cpp11adouble_et_"
 #include "operator_test.hpp"

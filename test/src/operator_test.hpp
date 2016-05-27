@@ -33,12 +33,82 @@ SCENARIO("Overloaded Arithmetic Operator Test with class: " T_STRINGIFY(OO_TYPE)
   }
 }
 
+SCENARIO("Overloaded Arithmetic Operator Test with class (rhs): " T_STRINGIFY(OO_TYPE), "["  TEST_PREFIX "operator_rhs]") {
+  GIVEN("Two operands of mixed types a, b (double)") {
+    OO_TYPE a = 10.0;
+    double b = 2.0;
+
+    REQUIRE(a.value() == 10.0);
+    REQUIRE(b == 2.0);
+
+    _test_2_t(+, 12.0)
+    _test_2_t(-, 8.0)
+    _test_2_t(*, 20.0)
+    _test_2_t(/, 5.0)
+
+    _test_1_t(+, 12.0)
+    _test_1_t(-, 8.0)
+    _test_1_t(*, 20.0)
+    _test_1_t(/, 5.0)
+  }
+}
+
+SCENARIO("Overloaded Arithmetic Operator Test with class (lhs): " T_STRINGIFY(OO_TYPE), "["  TEST_PREFIX "operator_lhs]") {
+  GIVEN("Two operands of mixed types a (double), b") {
+    double a = 10.0;
+    OO_TYPE b = 2.0;
+
+    REQUIRE(a == 10.0);
+    REQUIRE(b.value() == 2.0);
+
+    _test_2_t(+, 12.0)
+    _test_2_t(-, 8.0)
+    _test_2_t(*, 20.0)
+    _test_2_t(/, 5.0)
+    // No binary assignment possible, e.g., "double+=adouble"
+  }
+}
+
 SCENARIO("Overloaded Boolean Operator Test with class: " T_STRINGIFY(OO_TYPE), "[" TEST_PREFIX "bool_operator]") {
   GIVEN("Two operands of type " T_STRINGIFY(OO_TYPE) " a, b") {
     OO_TYPE a = 10.0;
     OO_TYPE b = 2.0;
 
     REQUIRE(a.value() == 10.0);
+    REQUIRE(b.value() == 2.0);
+
+    _test_2_t(==, false)
+    _test_2_t(!=, true)
+    _test_2_t(>, true)
+    _test_2_t(<, false)
+    _test_2_t(>=, true)
+    _test_2_t(<=, false)
+  }
+}
+
+SCENARIO("Overloaded Boolean Operator Test with class (rhs): " T_STRINGIFY(OO_TYPE), "[" TEST_PREFIX "bool_operator_rhs]") {
+  GIVEN("Two operands of mixed types a, b (double)") {
+    OO_TYPE a = 10.0;
+    double b = 2.0;
+
+    REQUIRE(a.value() == 10.0);
+    REQUIRE(b == 2.0);
+
+    _test_2_t(==, false)
+    _test_2_t(!=, true)
+    _test_2_t(>, true)
+    _test_2_t(<, false)
+    _test_2_t(>=, true)
+    _test_2_t(<=, false)
+  }
+}
+
+SCENARIO("Overloaded Boolean Operator Test with class (lhs): " T_STRINGIFY(OO_TYPE), "[" TEST_PREFIX "bool_operator_lhs]") {
+  GIVEN("Two operands of mixed types a (double), b") {
+    double a = 10.0;
+    OO_TYPE b = 2.0;
+
+    REQUIRE(a == 10.0);
     REQUIRE(b.value() == 2.0);
 
     _test_2_t(==, false)

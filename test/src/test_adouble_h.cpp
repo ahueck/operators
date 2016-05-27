@@ -5,7 +5,6 @@
  *      Author: ahueck
  */
 
-
 #include <cpp03/adouble.h>
 
 #include <TestUtil.h>

@@ -39,7 +39,7 @@ public:
 
   }
 
-  explicit adouble(const double& v) noexcept : a( v ) {
+  adouble(const double& v) noexcept : a( v ) {
 
   }
 
@@ -93,11 +93,16 @@ ADOUBLE_SELF_OPERATORS_LIST
     --a;
     return *this;
   }
+
+  adouble& operator-() {
+    a = -a;
+    return *this;
+  }
 };
 
-bool operator > (const adouble& lhs, const double& rhs) { \
+/*bool operator > (const adouble& lhs, const double& rhs) { \
   return lhs.value() > rhs;
-}
+}*/
 
 #define OP_CMP(OP_) \
   bool operator OP_ (const adouble& lhs, const adouble& rhs) { \
