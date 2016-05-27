@@ -7,9 +7,10 @@ function verify() {
   # returns ret indicating whether the test succeeded or failed
   ret=0
   local name=${1#.*_}
+  local log_out=/tmp/out_operators_unit.log
   echo -e "Test '${name%Debug}' \c"
-  "$1" > /dev/shm/out_opov.log
-  grep -q 'All tests passed' /dev/shm/out_operators.log && echo "succeeded."
+  "$1" > "$log_out"
+  grep -q 'All tests passed' "$log_out" && echo "succeeded."
   if [ ! $? -eq 0 ] ; then
     echo "failed!"
     ret=1    
