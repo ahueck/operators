@@ -1,9 +1,11 @@
 include_directories(${PROJECT_SOURCE_DIR}/test/include)
 
-#set(unit_test_names adouble_h)
+set(unit_test_names 
+  src/test_adouble_h.cpp 
+  src/test_adouble_et.cpp 
+)
 
-file(GLOB test_src "src/*.cpp")
+message(STATUS "Unit test source files: " ${unit_test_names})
 
-message(STATUS "Unit test source files: " ${test_src})
-
-add_executable(test_runner${EXE_SUFFIX} ${test_src}) #src/main.cpp src/test_adouble_h.cpp)
+add_executable(test_runner${EXE_SUFFIX} src/main.cpp ${unit_test_names})
+add_executable(test_adouble_tao${EXE_SUFFIX} src/test_adouble_tao.cpp)
