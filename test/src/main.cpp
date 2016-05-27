@@ -6,4 +6,4 @@
  */
 
 #define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
+#include <external/catch/catch.hpp>

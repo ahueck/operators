@@ -10,7 +10,7 @@
 #include <TestUtil.h>
 // Due to name clashes with cpp03 -> separate TU is created
 #define CATCH_CONFIG_MAIN
-#include <catch/catch.hpp>
+#include <external/catch/catch.hpp>
 
 #define OO_TYPE adouble
 #define TEST_PREFIX "cpp11adouble_tao_"

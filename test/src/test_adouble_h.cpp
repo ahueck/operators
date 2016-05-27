@@ -9,7 +9,7 @@
 
 #include <TestUtil.h>
 
-#include <catch/catch.hpp>
+#include <external/catch/catch.hpp>
 
 #define OO_TYPE adouble
 #define TEST_PREFIX "cpp03adouble_"

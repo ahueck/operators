@@ -9,7 +9,7 @@
 
 #include <TestUtil.h>
 
-#include <catch/catch.hpp>
+#include <external/catch/catch.hpp>
 
 #define OO_TYPE scalar<double>
 #define TEST_PREFIX "cpp11adouble_et_"
