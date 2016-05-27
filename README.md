@@ -6,14 +6,19 @@ operators
 This is a project for creating user-defined types using operator overloading.
 
 
-Goal
+Project Goals
 ------------
 
-Multiple user-defined types with different techniques using operator overloading
-- Standard operator overloading:
-  - [*adouble* header](include/adouble.h)
-- Expression templates
-- Maximal compatibility (drop-in replacement for a floating-point type)
+Provides multiple user-defined types with different techniques employing operator overloading.
+- Standard operator overloading (C++98 / C++03):
+  - [*adouble* header](include/cpp03/adouble.h)
+- Expression templates (C++11):
+  - [*adouble_et* header](include/cpp11/adouble_et.h)
+- [The Art of C++ / Operators](https://github.com/taocpp/operators) implementation (C++11):
+  - [*adouble_tao* header](include/cpp11/adouble_tao.h)
+
+Maximal compatibility with built-in floating-point types 
+- *Drop-in replacement*
 
 
 License
@@ -32,7 +37,7 @@ For Ubuntu/Debian, refer to the [Travis CI file](.travis.yml) for guidance.
 ### Prerequisites
 
 1.  C++ Compiler with C++11 support for unit tests (GCC version >= 4.8)
-2.  cmake (version >= 2.8)
+2.  CMake (version >= 2.8)
 
 ### Build the unit tests
 

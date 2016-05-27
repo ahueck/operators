@@ -1,24 +1,86 @@
-language: C++
+language: c++
+os: linux
+sudo: false
 
-compiler:
-  - gcc
+# This only exists because of a bug: https://github.com/travis-ci/travis-ci/issues/4681
+env:
+  matrix:
+    - EMPTY_JOB_IN_TRAVIS_CI=1
 
-before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update -qq
+addons:
+  apt:
+    sources: &sources
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise
 
-install:
-  - sudo apt-get --yes install gcc-4.8 g++-4.8
+matrix:
+  exclude:
+    - env: EMPTY_JOB_IN_TRAVIS_CI=1
+  include:
+    - env: CLANG_VERSION=3.6 BUILD_TYPE=Release UNIT_TEST=1
+      addons:
+        apt:
+          packages:
+            - clang-3.6
+          sources: *sources
+    - env: CLANG_VERSION=3.7 BUILD_TYPE=Release UNIT_TEST=1
+      addons:
+        apt:
+          packages:
+            - clang-3.7
+          sources: *sources
+    - env: CLANG_VERSION=3.8 BUILD_TYPE=Release UNIT_TEST=1
+      addons: &clang38
+        apt:
+          packages:
+            - clang-3.8
+          sources: *sources
+    - env: GCC_VERSION=4.8 BUILD_TYPE=Release UNIT_TEST=1
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources: *sources
+    - env: GCC_VERSION=4.9 BUILD_TYPE=Release UNIT_TEST=1
+      addons:
+        apt:
+          packages:
+            - g++-4.9
+          sources: *sources
+    - env: GCC_VERSION=5 BUILD_TYPE=Release UNIT_TEST=1
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources: *sources
 
 before_script:
-  - mkdir build
-  - cd build
+  - |
+    if [[ -n $GCC_VERSION ]] ; then 
+      export CXX="g++-${GCC_VERSION}"
+      export CC="gcc-${GCC_VERSION}"
+    fi
+  - |
+    if [[ -n $CLANG_VERSION ]] ; then 
+      export CXX="clang++-${CLANG_VERSION}"
+      export CC="clang-${CLANG_VERSION}"
+    fi
+  - export BUILD_DIR="build_${CC}"
+  - export BIN_DIR="bin_${CC}"
+  - mkdir -p ${BUILD_DIR}
+  - cd ${BUILD_DIR}
 
 script: 
-  - cmake -DCMAKE_CXX_COMPILER=g++-4.8 ..
+  - cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DBINARY_OUTPUT_DIRECTORY=${BIN_DIR} ..
   - make
-  - cd .. && chmod +x unit_tests.sh
-  - ./unit_tests.sh
+  - cd ..
+  - |
+    if [[ $UNIT_TEST == 1 ]] ; then 
+      ./scripts/unit_tests.sh ${BIN_DIR}
+    fi
 
 branches:
   only:
