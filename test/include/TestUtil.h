@@ -16,6 +16,8 @@
 #define T_STRINGIFY(A) T_STRINGIFY__(A)
 
 namespace {
+
+namespace detail {
 template <typename T>
 auto v_impl(T&& t, std::false_type) -> decltype(t) {
   return t;
@@ -25,13 +27,16 @@ auto v_impl(T&& t, std::true_type) -> typename std::remove_reference<decltype(t.
   auto val = t.value();
   return val;
 }
+} /* namespace detail */
+
 template <typename T>
-auto val(T&& t) -> decltype(v_impl(std::forward<T>(t), std::is_class<typename std::remove_reference<T>::type>())) {
-  return v_impl(std::forward<T>(t), std::is_class<typename std::remove_reference<T>::type>());
+auto val(T&& t)
+    -> decltype(detail::v_impl(std::forward<T>(t), std::is_class<typename std::remove_reference<T>::type>())) {
+  return detail::v_impl(std::forward<T>(t), std::is_class<typename std::remove_reference<T>::type>());
 }
 }
 
-#define _test_2_t(OP, EXPECTED)                    \
+#define OP_Test_2_t(OP, EXPECTED)                  \
   WHEN("a" T_STRINGIFY(OP) "b") {                  \
     const auto ad = val(a);                        \
     const auto bd = val(b);                        \
@@ -49,7 +54,7 @@ auto val(T&& t) -> decltype(v_impl(std::forward<T>(t), std::is_class<typename st
     }                                              \
   }
 
-#define _test_1_t(OP, EXPECTED)            \
+#define OP_Test_1_t(OP, EXPECTED)          \
   WHEN("a" T_STRINGIFY(OP) "=b") {         \
     const auto bd = val(b);                \
     a OP## = b;                            \
@@ -61,7 +66,7 @@ auto val(T&& t) -> decltype(v_impl(std::forward<T>(t), std::is_class<typename st
     }                                      \
   }
 
-#define _test_unary_t(EXPR, EXPECTED)      \
+#define OP_Test_unary_t(EXPR, EXPECTED)    \
   WHEN(T_STRINGIFY(EXPR)) {                \
     EXPR;                                  \
     THEN("a is changed") {                 \
